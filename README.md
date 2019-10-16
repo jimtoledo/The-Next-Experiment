@@ -1,6 +1,6 @@
 # The Next Experiment
  COSC-438 Major Project
 Carly Good
-Zoe Lambert
 Jim Toledo
+Zoe Lambert
 
