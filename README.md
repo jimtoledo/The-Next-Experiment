@@ -1,9 +1,13 @@
 # The Next Experiment
- COSC-438 Major Project
+COSC-438 Major Project
+
 Carly Good
+
 Jim Toledo
+
 Zoe Lambert
 
+Destiny Adams
 
 concept ideas:
 	2 types of puzzle:
@@ -22,4 +26,5 @@ Destiny- Main room
 Carly- pad lock room
 Zoe- electric puzzle room
  
+
 
