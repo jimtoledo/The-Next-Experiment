@@ -14,11 +14,32 @@ end
 
 function _draw()
 	if state == 4 then
-		mech_room_draw()
+		main_room_draw()
 	end
 end
 -->8
 --destiny--
+--main entryway, 16x16--
+mainroom = {
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
+}
+function main_room_draw()
+cls(0)
+x =64-((#mainroom[1]/2)*8)
+y = 0
+for i=1,#mainroom do
+	for j=1,#mainroom[1] do
+		spr(mainroom[i][j],x,y)
+		x+= 8
+	end
+	x =64-((#mainroom[1]/2)*8)
+	y+= 8
+end
+end
+
+
 -->8
 --jimbob--
 -->8
