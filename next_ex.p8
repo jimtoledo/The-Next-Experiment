@@ -29,15 +29,19 @@ function _update()
 	 state += 1
 	 if state == 3 then
 	 	state+= 1
-	 elseif state == 4 then
+	 elseif state == 5 then
 	 	state = 1
 	 end
 	end
 end
 
 function _draw()
-	if state == 2 then
+	if state == 1 then
+		main_room_draw()	
+	elseif state == 2 then
 		lab_room_draw()
+	elseif state == 3 then
+		serv_room_draw()
 	elseif state == 4 then
 		mech_room_draw()
 	end
@@ -144,7 +148,9 @@ end
 function tile_facing()
 	local room 
 	
-	if(state==2) then 
+	if state == 1 then
+		room = mainroom
+	elseif(state==2) then 
 	 room=labroom
 	elseif state == 4 then 
 		room=mechroom
