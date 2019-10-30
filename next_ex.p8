@@ -278,6 +278,60 @@ function puzzle_select()
 		end
 	end
 end
+
+--end temp function---
+
+function add_inventory()
+	if state == 1 and d == false then
+		if (tile_facing() >= 10 and tile_facing() <= 10) or (tile_facing() >= 24 and tile_facing() <= 26) or (tile_facing() >= 40 and tile_facing() <= 42) then
+			add(collected_pieces,124)
+			d = true
+		end
+	elseif state == 2 and j== false then
+		if tile_facing() >= 84 and tile_facing() <= 86  then
+			add(collected_pieces,127)
+			j = true
+		end
+	elseif state == 3 and c == false then
+		if tile_facing() == 136 then
+			add(collected_pieces,126)
+			c = true
+		end
+	elseif state == 4 and z==false then
+		if tile_facing() == 210 or tile_facing() == 211 then
+			add(collected_pieces,125)
+			z= true	
+		end
+	end 
+end
+
+--returns sprite number of tile player is facing, if player is facing boundary, return -1
+function tile_facing()
+	local room 
+	
+	if state == 1 then
+		room = mainroom
+	elseif(state==2) then 
+	 room=labroom
+	elseif state == 4 then 
+		room=mechroom
+	end
+	
+	if p_dir==76 then
+		if(p_y+1>#room) return -1
+		return room[p_y+1][p_x]
+	elseif p_dir==77 then
+		if(p_y-1<1) return -1
+		return room[p_y-1][p_x]
+	elseif p_dir==78 then
+		if(p_x-1<1) return -1
+		return room[p_y][p_x-1]
+	elseif p_dir==79 then
+		if(p_x+1>#room[1]) return -1
+		return room[p_y][p_x+1]
+	end
+end
+
 __gfx__
 000000001111111dd111111122222222222222222222222222222222222222225555555555555885555555550000000000000000000000000000000000000000
 0000000011dd11111111dd1124442444244444444444444224444444444444425555555555885885555555550000000000000000000000000000000000000000
