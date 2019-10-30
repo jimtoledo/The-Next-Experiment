@@ -272,6 +272,10 @@ function puzzle_select()
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
 			return true
 		end
+		elseif(til == 35) or (til == 51) then
+			return true
+		end
+	end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
 			return true
