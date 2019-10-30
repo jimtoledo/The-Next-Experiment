@@ -20,7 +20,11 @@ function _init()
 	state = 4
 	
 	curr_key_item=-1 --sprite number for current key item (-1 for no item)
-	collected_pieces = {124,125,126,127} --sprite numbers for collected puzzle pieces (letters)
+	collected_pieces = {} --sprite numbers for collected puzzle pieces (letters)
+	d =false
+	j =false
+	z= false
+	c =false
 end
 
 function _update()
