@@ -37,6 +37,9 @@ function _update()
 	 	state = 1
 	 end
 	end
+	if btnp(5) then
+		add_inventory()
+	end
 end
 
 function _draw()
