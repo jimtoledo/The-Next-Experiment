@@ -7,7 +7,7 @@ function _init()
 	palt(14,true)
 	--p_x and p_y are the indexes of the room arrays
 	p_x=2
-	p_y=3
+	p_y=5
 	--p_dx and p_dy are only -1,0,1
 	p_dx=0
 	p_dy=0
@@ -17,7 +17,7 @@ function _init()
 	p_walkanimation=0 --for walking animation (0 or 1)
 	p_moving=false
 
-	state = 4
+	state = 1
 
 	curr_key_item=-1 --sprite number for current key item (-1 for no item)
 	collected_pieces = {} --sprite numbers for collected puzzle pieces (letters)
@@ -29,12 +29,6 @@ end
 
 function _update()
 	player_move()
-	if btnp(4) then
-	 state += 1
-	if state == 5 then
-	 	state = 1
-	 end
-	end
 	if btnp(5) then
 		add_inventory()
 	end
@@ -79,17 +73,8 @@ mainroom = {
 }
 
 function main_room_draw()
-cls(0)
-x =64-((#mainroom[1]/2)*8)
-y = 0
-for i=1,#mainroom do
-	for j=1,#mainroom[1] do
-		spr(mainroom[i][j],x,y)
-		x+= 8
-	end
-	x =64-((#mainroom[1]/2)*8)
-	y+= 8
-end
+	cls(0)
+	draw_room(mainroom)
 end
 
 
@@ -269,18 +254,34 @@ end
 
 --move between different rooms via door
 function door_check()
-	if(tile_standing()>=101 and tile_standing()<=103) then
-		if state==2 then
-			state=4
-			p_x=5
-			p_y=5
+	if(tile_standing()>=101 and tile_standing()<=103)or tile_standing() == 34 or tile_standing() == 35
+			or tile_standing() == 49 or tile_standing() == 50 then
+		if state== 1 then
+			if	tile_standing() == 101 then
+				state = 3
+				p_x=1
+				p_y=8
+			elseif tile_standing() == 102 then
+			 state = 4
+				p_x=5
+				p_y=5
+			elseif tile_standing() == 34 or tile_standing() == 35
+										or tile_standing() == 49 or tile_standing() == 50 then
+				state = 2
+				p_x=1
+				p_y=7
+			end										
+		elseif state==2 then
+			state=1
+			p_x=8
+			p_y=15
 		elseif state==4 then
-			state=2
+			state=1
 			p_x=1
 			p_y=7
 		elseif state==3 then
 			state=1
-			p_x=5
+			p_x=16
 			p_y=7
 		end
 	end
@@ -289,11 +290,11 @@ end
 --temp function--
 function puzzle_select()
 	local til = tile_facing()
-
+	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
 			return true
-		elseif(til == 35 or til == 51) then
+		elseif(stan == 35 or stan == 51) then
 			return true
 		end
 	elseif state == 2 then
@@ -488,5 +489,5 @@ d1d1dd1dd533555dd255550000550110000000000000000000000000000000000000000000000000
 55222222555555550000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 55255525555555550000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __gff__
-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010101010101000000000000000000010101010101010000000000000000000101010101000000000000000000000001010101010100000000000000000000
+0000000000000101010000000000000000000000000001010100000000000000000000000000000000000000000000000000000000000000000000000000000001010101010101000000000000000000010101010101010000000000000000000101010101000000000000000000000001010101010100000000000000000000
 0101010101010101010101010101010101010100010101010101010101010101000000000000000000000000000000000000000000000000000000000000000001010101000000000000000000000000000101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
