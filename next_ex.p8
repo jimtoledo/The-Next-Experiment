@@ -62,7 +62,7 @@ function _draw()
 		print("arrows to move	",55,112,7)
 		print("❎ to interact",55,120,7)
 	end
-	if btn(5) and not p_moving then 
+	if btn(5) then 
 		if puzzle_select() then
 			print("this would be a	",55,112,7)
 			print("puzzle",55,120,7)
@@ -186,7 +186,8 @@ function tile_facing()
 	elseif state == 5 then
 		return -1
 	end
-
+	local p_x = flr(p_x+0.5)
+	local p_y = flr(p_y+0.5)
 	if p_dir==76 then
 		if(p_y+1>#room) return -1
 		return room[p_y+1][p_x]
@@ -216,6 +217,8 @@ function tile_standing()
 	elseif state == 5 then
 		return -1
 	end
+	local p_x = flr(p_x+0.5)
+	local p_y = flr(p_y+0.5)
 	return room[p_y][p_x]
 end
 
@@ -320,7 +323,6 @@ end
 
 --temp function--
 function puzzle_select()
-	if(p_moving) return false
 	local til = tile_facing()
 	local stan = tile_standing()
 	if state == 1 then
