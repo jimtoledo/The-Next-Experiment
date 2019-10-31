@@ -62,7 +62,7 @@ function _draw()
 		print("arrows to move	",55,112,7)
 		print("❎ to interact",55,120,7)
 	end
-	if btn(5) then 
+	if btn(5) and not p_moving then 
 		if puzzle_select() then
 			print("this would be a	",55,112,7)
 			print("puzzle",55,120,7)
