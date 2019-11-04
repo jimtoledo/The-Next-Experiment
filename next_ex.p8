@@ -179,6 +179,8 @@ function draw_room(room)
  	x =64-((#room[1]/2)*8)
  	y+= 8
  end
+	rectfill(0,0,18,8,1)
+	rect(0,0,18,8,0)
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
 end
 
@@ -452,6 +454,11 @@ function win_draw()
 		a+= 1
 	end
 end	
+
+function win_animation()
+
+end
+
 
 function hcenter(s)
   return 64-#s*2
