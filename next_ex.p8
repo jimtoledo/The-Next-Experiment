@@ -75,8 +75,7 @@ function _draw()
 		if state < 5 then
 			inv_display()
 			if not controls then
-			print("arrows to move	",55,112,7)
-			print("❎ to interact",55,120,7)
+			print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
 			end
 			if btn(5) then 
 				if puzzle_select() then
@@ -217,6 +216,8 @@ function laser_draw()
  	x =64-((#laser_puz[1]/2)*8)
  	y+= 8
  end
+ palt(0,false)
+	palt(14,true)
 	rectfill(0,0,18,8,1)
 	rect(0,0,18,8,0)
 	spr(sel.color,64-((#laser_puz[1]/2)*8)+flr(8*(sel.x-1)),(8*(sel.y-1)))
@@ -225,12 +226,12 @@ end
 
 function draw_cons()
 	rect(2,85,127,127,7)
-	print("press z to exit",4,88,7) 
-	print("and check puzzle",4,94,7)
-	print("press x to select or deselect",4,100,7)
-	print("use arrow keys to move",4,106,7)
-	print("connect the wires",4,114,7) 
-	print("to restore power",4,120,7)
+	print(
+	"❎: select / deselect\n"..
+	"⬅️⬇️⬆️➡️: move\n\n"..
+	"connect wires ".. 
+	"to restore power\n\n"..
+	"z: exit",4,88,7) 
 end
 
 function laser_con()
@@ -244,6 +245,12 @@ function laser_con()
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.x+= 1
 		end
+		if puz_win() then
+			lights = true
+			state = 4
+		else
+			lights = false
+		end
 	end
 	if btnp(1) then
 		if sel.color != 213 then
@@ -253,6 +260,12 @@ function laser_con()
 		sel.x += 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.x -= 1
+		end
+		if puz_win() then
+			lights = true
+			state = 4
+		else
+			lights = false
 		end
 	end
 	if btnp(2) then
@@ -264,6 +277,12 @@ function laser_con()
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.y+= 1
 		end
+		if puz_win() then
+			lights = true
+			state = 4
+		else
+			lights = false
+		end
 	end
 	if btnp(3)	then
 		if sel.color != 213 then
@@ -274,11 +293,14 @@ function laser_con()
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.y-= 1
 		end
-	end
-	if btnp(4) then
 		if puz_win() then
 			lights = true
+			state = 4
+		else
+			lights = false
 		end
+	end
+	if btnp(4) then
 		state = 4
 	end
 	if btnp(5) then
@@ -408,12 +430,37 @@ function draw_room(room)
  y = 0
  for i=1,#room do
  	for j=1,#room[1] do
+ 	if not lights and state<5 then
+ 		if state !=4 then
+ 			for i=2,15 do
+					pal(i,1)
+				end
+			else
+					pal(8,1)
+					pal(7,1)
+					pal(3,1)
+					pal(6,1)
+					pal(11,1)
+					pal(12,1)
+					pal(13,1)
+			end
+			pal(1,0)
+			pal(5,0)
+			pal(2,0)
+		else
+			pal()
+			palt(0,false)
+			palt(14,true)
+		end		
 			spr(room[i][j],x,y)
  		x+= 8
  	end
  	x =64-((#room[1]/2)*8)
  	y+= 8
  end
+ pal()
+ palt(0,false)
+	palt(14,true)
 	rectfill(0,0,18,8,1)
 	rect(0,0,18,8,0)
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
