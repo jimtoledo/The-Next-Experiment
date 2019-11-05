@@ -323,7 +323,7 @@ function laser_map(d,l)
 		ru = 219
 		lu = 220
 	elseif sel.color == 237 then
-		lr = 232
+		lr = 231
 		ud = 232
 		ld = 233
 		rd = 234
