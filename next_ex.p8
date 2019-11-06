@@ -78,10 +78,7 @@ function _draw()
 			print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
 			end
 			if btn(5) then 
-				if puzzle_select() then
-					print("this would be a	",55,112,7)
-					print("puzzle",55,120,7)
-				end
+				puzzle_select() 
 				win_check()
 			end
 		end
@@ -587,11 +584,11 @@ function door_check()
 				state = 4
 				p_x=5
 				p_y=5
-			elseif t == 33 then
+			elseif t == 33 and lights then
 				state = 2
 				p_x=4
 				p_y=2
-			elseif t == 34 then
+			elseif t == 34 and lights then
 				state = 2
 				p_x=5
 				p_y=2
@@ -616,33 +613,38 @@ function door_check()
 	end
 end
 
---temp function--
 function puzzle_select()
 	local til = tile_facing()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			return true
+			print("this would be a\n"..
+			"puzzle",55,115,7)
 		elseif(stan == 35 or stan == 51) then
-			return true
+			print("this would be a\n"..
+			"puzzle",55,115,7)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
-			return true
+			print("this would be a\n"..
+			"puzzle",55,115,7)
 		end
 	elseif state == 3 then
 		if til == 153 or til == 136 then
-			return true
+			print("this would be a\n"..
+			"puzzle",55,110,7)
 		end
 	elseif state == 4 then
 		if til == 209 then
-			state = 7
-			return true
+			if not lights then
+				state = 7
+			else
+				print("power is already\nrestored",55,110,7)
+			end
 		end
 	end
 end
 
---end temp function---
 
 function add_inventory()
 	if state == 1 and d == false then
