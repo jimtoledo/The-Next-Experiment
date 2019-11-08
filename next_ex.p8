@@ -18,6 +18,10 @@ function _init()
 	p_moving=false
 
 	state = 6
+	
+	timer_mins = 6
+	timer_secs = 0
+	timer_ticks = 0
 
 	curr_key_item=-1 --sprite number for current key item (-1 for no item)
 	collected_pieces = {} --sprite numbers for collected puzzle pieces (letters)
@@ -30,12 +34,18 @@ function _init()
 	
 	lights = false
 	
+	fail = false
+	
 	mech_room_init()
 	lab_room_init()
 end
 
 function _update()
 	if(state < 5) player_move()
+	if timer_mins <= 0 and timer_secs <= 0 then
+		fail = true
+		state= 5
+	end
 	if state == 7 then
 		laser_con()
 	elseif state == 8 then
@@ -88,7 +98,11 @@ function _draw()
 			end
 		end
 		runtime = game_timer()
-		print(runtime,2,2,7)
+		if timer_mins <= 1 then
+			print(runtime,2,2,8)
+		else
+			print(runtime,2,2,7)
+		end
 	end
 end
 -->8
@@ -381,6 +395,8 @@ function laser_con()
 		end
 		if puz_win() then
 			lights = true
+			add(collected_pieces,125)
+			z= true
 			state = 4
 		else
 			lights = false
@@ -397,6 +413,8 @@ function laser_con()
 		end
 		if puz_win() then
 			lights = true
+			add(collected_pieces,125)
+			z= true
 			state = 4
 		else
 			lights = false
@@ -413,6 +431,8 @@ function laser_con()
 		end
 		if puz_win() then
 			lights = true
+			add(collected_pieces,125)
+			z= true
 			state = 4
 		else
 			lights = false
@@ -429,6 +449,8 @@ function laser_con()
 		end
 		if puz_win() then
 			lights = true
+			add(collected_pieces,125)
+			z= true
 			state = 4
 		else
 			lights = false
@@ -798,11 +820,6 @@ function add_inventory()
 			add(collected_pieces,126)
 			c = true
 		end
-	elseif state == 4 and z==false then
-		if tile_facing() == 210 or tile_facing() == 211 then
-			add(collected_pieces,125)
-			z= true
-		end
 	end
 end
 
@@ -818,16 +835,27 @@ function win_check()
 end
 
 function game_timer()
-	t = time()-start_time
-	mins = flr(t/60)
-	secs = flr(t%60)
-	
-	if secs <10 then
-	 game_time = mins..":0"..secs
+	--t = time()-start_time
+	--mins = flr(t/60)
+	--secs = flr(t%60)
+	if timer_ticks == 30 then
+		if timer_secs == 0 then
+			timer_mins -= 1
+		timer_secs = 59
+		else
+			timer_secs -= 1
+		end
+		timer_ticks = 0
 	else
-		game_time = mins..":"..secs
+		timer_ticks +=1
 	end
 	
+	if timer_secs <10 then
+	 game_time = timer_mins..":0"..timer_secs
+	else
+		game_time = timer_mins..":"..timer_secs
+	end
+
 	return game_time
 end
 	
@@ -876,16 +904,42 @@ winroom = {
 	{19,19,19,19,19,19,19,49,50,19,19,19,19,19,19,19}
 }
 function win_draw()
-	if time()-set <= 6 then
-		win_animation()
-		draw_room(winroom)
-		print(runtime,2,2,7)
+	if not fail then
+		if time()-set <= 6 then
+			win_animation()
+			draw_room(winroom)
+			print(runtime,2,2,7)
+		else
+			cls(5)
+			print("time left: "..runtime,hcenter("runtime: "..runtime),50,12)
+			print("you have escaped",hcenter("you have escaped"),60,12)
+			print("press ❎ to play again",hcenter("press ❎ to play again"),70,12)
+		
+			i = 112
+			a = 1
+			x = 0
+			while a <= 18 do
+				spr(i,x,120)
+				x+= 8
+				i += 1
+				if i > 116 then
+					i = 112
+				end
+				a+= 1
+			end
+		end
 	else
-		cls(5)
-		print("runtime: "..runtime,hcenter("runtime: "..runtime),50,12)
-		print("you have escaped",hcenter("you have escaped"),60,12)
-		print("press ❎ to play again",hcenter("press ❎ to play again"),70,12)
+		cls(0)
+		print("you have failed",hcenter("you have failed"),60,8)
+		print("press ❎ to try again",hcenter("press ❎ to try again"),70,8)
 	
+		for i=2,15 do
+			pal(i,1)
+		end
+		pal(1,0)
+		pal(5,0)
+		pal(2,0)
+			
 		i = 112
 		a = 1
 		x = 0
@@ -898,7 +952,10 @@ function win_draw()
 			end
 			a+= 1
 		end
-	end
+		pal()
+		palt(0,false)
+		palt(14,true)
+	end		
 end	
 
 function win_animation()
