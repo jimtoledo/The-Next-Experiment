@@ -34,7 +34,7 @@ function _init()
 	
 	controls = false
 	
-	lights = false
+	lights = true
 	
 	fail = false
 	
@@ -43,38 +43,50 @@ function _init()
 	dialog_messages={} --dialog to show (manipulated through different functions)
 	dialog_curr_char=1 --animating dialog
 	dialog_counter=0 --animating dialog
+	print_x=0
+	print_y=0
 	
 	mech_room_init()
 	lab_room_init()
 end
 
 function _update()
-	if(state < 5) player_move()
 	if timer_mins <= 0 and timer_secs <= 0 then
 		fail = true
 		state= 5
 	end
-	if dialog_state > 0 then
-		dialog_update()
-	elseif state == 7 then
-		laser_con()
-	elseif state == 8 then
-		chem_con()
-	elseif btnp(5) then
-		if not p_moving then
-			add_inventory()
-		end
-		if not controls and state < 5 then
-			controls =true
-		end
-		if state == 5 then
-			state = 6
-			_init()
-		elseif state == 6 then
-			state = 1
-			start_time = time()
+	
+	if dialog_state==0 then
+		if state == 7 then
+			laser_con()
+		elseif state == 8 then
+			chem_con()
+		elseif btnp(5) then
+			if not p_moving then
+				add_inventory()
+			end
+			if not controls and state < 5 then
+				controls =true
+			end
+			if state == 5 then
+				state = 6
+				_init()
+			elseif state == 6 then
+				state = 1
+				start_time = time()
+			end
 		end
 	end
+	
+	if(state < 5 and dialog_state==0) then
+		player_move()
+		if btnp(5) then 
+			puzzle_select() 
+			win_check()
+		end
+	end
+	if(dialog_state>0) dialog_update()
+	
 end
 
 function _draw()
@@ -99,17 +111,8 @@ function _draw()
 	if state < 5 or state>=7 then
 		if state < 5 then
 			inv_display()
-			if dialog_state > 0 then
-				dialog_draw()
-			else
-				if not controls then
-				print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
-				end
-				if btn(5) then 
-					puzzle_select() 
-					win_check()
-				end
-			end
+			if(not controls) print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
+			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
 		if timer_mins <= 1 then
@@ -791,11 +794,11 @@ function puzzle_select()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			print("this would be a\n"..
-			"puzzle",55,115,7)
+			show_dialog({"this would be a\n"..
+			"puzzle"},55,115)
 		elseif(stan == 35 or stan == 51) then
-			print("this would be a\n"..
-			"puzzle",55,115,7)
+			show_dialog({"this would be a\n"..
+			"puzzle"},55,115)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
@@ -803,15 +806,15 @@ function puzzle_select()
 		end
 	elseif state == 3 then
 		if til == 153 or til == 136 then
-			print("this would be a\n"..
-			"puzzle",55,110,7)
+			show_dialog({"this would be a\n"..
+			"puzzle"},55,110)
 		end
 	elseif state == 4 then
 		if til == 209 then
 			if not lights then
 				state = 7
 			else
-				print("power is already\nrestored",55,110,7)
+				show_dialog({"power is already\nrestored"},55,110)
 			end
 		end
 	end
@@ -842,7 +845,7 @@ function win_check()
 			set = time()
 			state = 5
 		else
-			print("door is locked",55,120,7)
+			show_dialog({"door is locked"},55,120)
 		end
 	end
 end
@@ -873,23 +876,26 @@ function game_timer()
 end
 
 --use this function to show dialog messages to the player (make sure messages is a non-empty table of strings)
-function show_dialog(messages)
+function show_dialog(messages,x,y)
 	dialog_messages=messages
+	print_x=x
+	print_y=y
 	dialog_counter=0
 	dialog_curr_char=1
 	dialog_state=1
 end
 
 function dialog_update()
-	if dialog_curr_char<=#dialog_messages[dialog_state] then
-		if dialog_counter==2 then
-			dialog_counter=-1
+	if dialog_curr_char<#dialog_messages[dialog_state] then
+		if dialog_counter==1 then
+			dialog_counter=0
 			dialog_curr_char+=1
 		end
 	elseif btnp(5) then
-		dialog_counter=-1
+		dialog_counter=0
 		if dialog_state<#dialog_messages then
 			dialog_state+=1
+			dialog_curr_char=1
 		else
 			dialog_state=0
 		end
@@ -898,7 +904,12 @@ function dialog_update()
 end	
 	
 function dialog_draw()
-	print(sub(dialog_messages[dialog_state],1,dialog_curr_char),55,110,7)
+	local button=""
+	if dialog_curr_char==#dialog_messages[dialog_state] then
+	 if(dialog_counter>10) button=" ❎"
+	 if(dialog_counter>20) dialog_counter=0
+	end
+	print(sub(dialog_messages[dialog_state],1,dialog_curr_char)..button,print_x,print_y,7)
 end
 
 function small_font(x)
