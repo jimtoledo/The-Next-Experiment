@@ -34,39 +34,59 @@ function _init()
 	
 	controls = false
 	
-	lights = false
+	lights = true
 	
 	fail = false
+	
+	--dialog stuff--
+	dialog_state=0 --0 is not currently in dialog
+	dialog_messages={} --dialog to show (manipulated through different functions)
+	dialog_curr_char=1 --animating dialog
+	dialog_counter=0 --animating dialog
+	print_x=0
+	print_y=0
 	
 	mech_room_init()
 	lab_room_init()
 end
 
 function _update()
-	if(state < 5) player_move()
 	if timer_mins <= 0 and timer_secs <= 0 then
 		fail = true
 		state= 5
 	end
-	if state == 7 then
-		laser_con()
-	elseif state == 8 then
-		chem_con()
-	elseif btnp(5) then
-		if not p_moving then
-			add_inventory()
-		end
-		if not controls and state < 5 then
-			controls =true
-		end
-		if state == 5 then
-			state = 6
-			_init()
-		elseif state == 6 then
-			state = 1
-			start_time = time()
+	
+	if dialog_state==0 then
+		if state == 7 then
+			laser_con()
+		elseif state == 8 then
+			chem_con()
+		elseif btnp(5) then
+			if not p_moving then
+				add_inventory()
+			end
+			if not controls and state < 5 then
+				controls =true
+			end
+			if state == 5 then
+				state = 6
+				_init()
+			elseif state == 6 then
+				state = 1
+				start_time = time()
+			end
 		end
 	end
+	
+	if(state < 5 and dialog_state==0) then
+		player_move()
+		if btnp(5) then 
+			puzzle_select() 
+			win_check()
+		end
+	end
+	if(dialog_state>0) dialog_update()
+	
 end
 
 function _draw()
@@ -91,13 +111,8 @@ function _draw()
 	if state < 5 or state>=7 then
 		if state < 5 then
 			inv_display()
-			if not controls then
-			print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
-			end
-			if btn(5) then 
-				puzzle_select() 
-				win_check()
-			end
+			if(not controls) print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
+			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
 		if timer_mins <= 1 then
@@ -779,11 +794,11 @@ function puzzle_select()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			print("this would be a\n"..
-			"puzzle",55,115,7)
+			show_dialog({"this would be a\n"..
+			"puzzle"},55,115)
 		elseif(stan == 35 or stan == 51) then
-			print("this would be a\n"..
-			"puzzle",55,115,7)
+			show_dialog({"this would be a\n"..
+			"puzzle"},55,115)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
@@ -791,20 +806,19 @@ function puzzle_select()
 		end
 	elseif state == 3 then
 		if til == 153 or til == 136 then
-			print("this would be a\n"..
-			"puzzle",55,110,7)
+			show_dialog({"this would be a\n"..
+			"puzzle"},55,110)
 		end
 	elseif state == 4 then
 		if til == 209 then
 			if not lights then
 				state = 7
 			else
-				print("power is already\nrestored",55,110,7)
+				show_dialog({"power is already\nrestored"},55,110)
 			end
 		end
 	end
 end
-
 
 function add_inventory()
 	if state == 1 and d == false then
@@ -831,7 +845,7 @@ function win_check()
 			set = time()
 			state = 5
 		else
-			print("door is locked",55,120,7)
+			show_dialog({"door is locked"},55,120)
 		end
 	end
 end
@@ -860,7 +874,43 @@ function game_timer()
 
 	return game_time
 end
+
+--use this function to show dialog messages to the player (make sure messages is a non-empty table of strings)
+function show_dialog(messages,x,y)
+	dialog_messages=messages
+	print_x=x
+	print_y=y
+	dialog_counter=0
+	dialog_curr_char=1
+	dialog_state=1
+end
+
+function dialog_update()
+	if dialog_curr_char<#dialog_messages[dialog_state] then
+		if dialog_counter==1 then
+			dialog_counter=0
+			dialog_curr_char+=1
+		end
+	elseif btnp(5) then
+		dialog_counter=0
+		if dialog_state<#dialog_messages then
+			dialog_state+=1
+			dialog_curr_char=1
+		else
+			dialog_state=0
+		end
+	end
+	dialog_counter+=1
+end	
 	
+function dialog_draw()
+	local button=""
+	if dialog_curr_char==#dialog_messages[dialog_state] then
+	 if(dialog_counter>10) button=" ❎"
+	 if(dialog_counter>20) dialog_counter=0
+	end
+	print(sub(dialog_messages[dialog_state],1,dialog_curr_char)..button,print_x,print_y,7)
+end
 
 function small_font(x)
 	lowered =""
@@ -1068,22 +1118,22 @@ __gfx__
 550000000000005555000000000000559955555555555555555555990555555555555550eeee766eeeee766eeeee766eeed878deed888deeeee8788ee8878eee
 559999999999995555999999999999559955555555555555555555990555555555555550eeee777eeeee777eeeee777eee8888eeee8888eeeed8d88ee88d8dee
 559555555555595555955555555559559955555555555555555555990555555555555550eeee111eeeee111eeeee111eeeeee6eeeeeee6eeee66eeeeeeee66ee
-5555555555555555555555555555555500000000556666666666665567777776000000001177eeee1177eeee1177eeeeee4444eeee4444eee44444eeee44444e
-5557775555777555555575555557555500777700567777777777776567777776007777001177eeee11771eee11771eeee444444ee444444ee444444ee444444e
-5557775555777555555575555557555507777770677777777777777667777776007766001177eeee1177eeee1177e1eee4ffff4ee4ffff4eeffff44ee44ffffe
-555ddd5555ddd555555aaa5555aaa5550777777067777777777777766777777600777700eeeeeeeeeeeeeeeeeeeee1eeef0ff0feeffffffeef0ffffeeffff0fe
-555ddd5555ddd555555aaa5555aaa5550777777067777777777777766777777600ffff00eeee777eeeee777eeeee777eeffffffeeffffffeefff888ee888fffe
-550000000000005555000000000000550777777067777777777777766777777600ffff00eeee766eeeee766eeeee766eed887deeeed888deeed8d88ee88d8dee
-559999999999995555999999999999550077770056777777777777655677776500ffff00eeee111eeeee111eeeee111eee8888eeee8888eeeee8788ee8878eee
-559555555555595555955555555559550000000055666666666666555566665500000000eeee111eeeee111eeeee111eee6eeeeeee6eeeeeeeee66eeee66eeee
-555555555555555555555555555555555555555555555555777777700000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-557775577755575555755577755575555555777555555555777777700000000000777700eeeeeeeeeeeeeeeeeeeeeeeeee666eeeee6666eeee6666eeee6666ee
-557775577755575555755577755575557575766555566555777777700000000000776600eeeeeeeeeeeeeeeeeeeeeeeeee6ee6eeeeeee6eeee6eeeeeeeee6eee
-551115588855ccc55aaa55ddd55bbb557575777555565555777777700000000000777700eeeeeeeeeeeeeeeeeeeeeeeeee6ee6eeeeee6eeeee6eeeeeeeee6eee
-551115588855ccc55aaa55ddd55bbb557575777556565655fffffff00000000000222200eeee777eeeee777eeeee777eee6ee6eeeee6eeeeee6eeeeeeeee6eee
-000000000000000000000000000000000000000000000000fffffff00000000000222200eeee766eeeee766eeeee766eee6ee6eeee6eeeeeee6eeeeeee6e6eee
-999999999999999999999999999999999999999999999999fffffff00000000000222200eeee777eeeeefffeeeeefffeee666eeeee6666eeee6666eeee666eee
-999999999999999999999999999999999999999999999999fffffff00000000000000000eeee777eeeeefffeeeee111eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+5555555555555555555555555555555500000000556666666666665567777776eeeeeeee1177eeee1177eeee1177eeeeee4444eeee4444eee44444eeee44444e
+5557775555777555555575555557555500777700567777777777776567777776ee7777ee1177eeee11771eee11771eeee444444ee444444ee444444ee444444e
+5557775555777555555575555557555507777770677777777777777667777776ee7766ee1177eeee1177eeee1177e1eee4ffff4ee4ffff4eeffff44ee44ffffe
+555ddd5555ddd555555aaa5555aaa55507777770677777777777777667777776ee7777eeeeeeeeeeeeeeeeeeeeeee1eeef0ff0feeffffffeef0ffffeeffff0fe
+555ddd5555ddd555555aaa5555aaa55507777770677777777777777667777776eeffffeeeeee777eeeee777eeeee777eeffffffeeffffffeefff888ee888fffe
+5500000000000055550000000000005507777770677777777777777667777776eeffffeeeeee766eeeee766eeeee766eed887deeeed888deeed8d88ee88d8dee
+5599999999999955559999999999995500777700567777777777776556777765eeffffeeeeee111eeeee111eeeee111eee8888eeee8888eeeee8788ee8878eee
+5595555555555955559555555555595500000000556666666666665555666655eeeeeeeeeeee111eeeee111eeeee111eee6eeeeeee6eeeeeeeee66eeee66eeee
+5555555555555555555555555555555555555555555555557777777000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+5577755777555755557555777555755555557775555555557777777000000000ee7777eeeeeeeeeeeeeeeeeeeeeeeeeeee666eeeee6666eeee6666eeee6666ee
+5577755777555755557555777555755575757665555665557777777000000000ee7766eeeeeeeeeeeeeeeeeeeeeeeeeeee6ee6eeeeeee6eeee6eeeeeeeee6eee
+551115588855ccc55aaa55ddd55bbb5575757775555655557777777000000000ee7777eeeeeeeeeeeeeeeeeeeeeeeeeeee6ee6eeeeee6eeeee6eeeeeeeee6eee
+551115588855ccc55aaa55ddd55bbb557575777556565655fffffff000000000ee2222eeeeee777eeeee777eeeee777eee6ee6eeeee6eeeeee6eeeeeeeee6eee
+000000000000000000000000000000000000000000000000fffffff000000000ee2222eeeeee766eeeee766eeeee766eee6ee6eeee6eeeeeee6eeeeeee6e6eee
+999999999999999999999999999999999999999999999999fffffff000000000ee2222eeeeee777eeeeefffeeeeefffeee666eeeee6666eeee6666eeee666eee
+999999999999999999999999999999999999999999999999fffffff000000000eeeeeeeeeeee777eeeeefffeeeee111eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 44477745444444448888888844444444444444444444444449999964777777777777776744444444eee999998888888888888888444444455555455555555544
 44779775444444448888888844444444444444444444444429222584777777777777776744444444eee999998888888888888888444444452222455555554444
 47777777444444448888888899999999444444444444444429226664666666667777776799999994eee9999988888888888888884444444a2552455555444444
