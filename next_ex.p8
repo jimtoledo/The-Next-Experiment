@@ -136,6 +136,8 @@ function main_room_draw()
 	spr(38,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
 end
 
+--add a condition to only draw the doorway arrow when near or
+-- standing on the doorways
 function draw_arrows()
 	spr(52,64-((#mainroom[1]/2)*8)+flr(8*(15-1)),flr(8*(7-1)))
 	spr(52,64-((#mainroom[1]/2)*8)+flr(8*(2-1)),flr(8*(7-1)), 1.0, 1.0, true)
