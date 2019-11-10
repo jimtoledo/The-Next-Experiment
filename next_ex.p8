@@ -850,6 +850,7 @@ function puzzle_select()
 			end
 		elseif til == 210 or til== 211 then
 			if curr_key_item==120 then
+				show_dialog({"you toss the\nchemical into\nthe stove","causing the stove\nto explode!"},55,105)
 				mechroom[1][5] =206
 				mechroom[1][6] =207
 				mechroom[2][5] =222
@@ -857,6 +858,9 @@ function puzzle_select()
 				mechroom[3][5] =238
 				mechroom[3][6] =239
 				explo =true
+				curr_key_item=-1
+			elseif curr_key_item==104 then
+				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},55,105)
 				curr_key_item=-1
 			end
 		end
@@ -974,8 +978,8 @@ end
 -->8
 --intro/outtro code--
 function intro_draw()
-	cls(5)
-	print("the next experiment",hcenter("the next experiment"),10,2)
+	cls()
+	print("the next experiment",hcenter("the next experiment"),10,8)
 	print("you have been taken and are now ",hcenter("you have been taken and are now"),30,6)
 	print("trapped inside a dark castle",hcenter("trapped	inside a dark castle"),40,6)
 	print("figure out how to escape",hcenter("figure out how to escape"),50,6)
