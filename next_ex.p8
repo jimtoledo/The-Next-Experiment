@@ -64,9 +64,6 @@ function _update()
 		elseif state == 8 then
 			chem_con()
 		elseif btnp(5) then
-			if not p_moving then
-				add_inventory()
-			end
 			if not controls and state < 5 then
 				controls =true
 			end
@@ -83,7 +80,8 @@ function _update()
 	if(state < 5 and dialog_state==0) then
 		player_move()
 		if btnp(5) then 
-			puzzle_select() 
+			puzzle_select()
+			add_inventory() 
 			win_check()
 		end
 	end
@@ -806,6 +804,37 @@ function puzzle_select()
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
 			state = 8
+		end
+		if til >= 84 and til <= 86 then
+			show_dialog({"there's something\nwritten on the\nchalkboard",
+			"\"I HAVE CRAFTED AN\nEXPLOSIVE CHEMICAL\nLIKE NO OTHER!",
+			"IT'S totally PALE\nAND not DARK\nPURPLE!",
+			"I'VE DECIDED TO\nCALL IT 'friend'.\"\n"},55,107)
+		--chalkboard
+		end
+		if til==64 or til==65 then
+		--dark blue
+			show_dialog({"there are beakers\nlabeled 'LIfE' on\nthe table"},55,107)
+		end
+		if til==80 or til==81 then
+			show_dialog({"there are beakers\nlabeled 'FrEEDOM'\non the table"},55,107)
+		--red
+		end
+		if til==66 or til==67 then
+			show_dialog({"there are flasks\nlabeled 'ILLUSiON'\non the table"},55,107)
+		--green
+		end
+		if til==82 or til==83 then
+			show_dialog({"there are flasks\nlabeled 'BeAUTY'\non the table"},55,107)
+		--light blue
+		end
+		if til==96 or til==97 then
+			show_dialog({"there are beakers\nlabeled 'EnTROPY'\non the table"},55,107)
+		--indigo
+		end
+		if til==98 or til==99 then
+			show_dialog({"there are flasks\nlabeled 'dEATH'\non the table"},55,107)
+		--yellow
 		end
 	elseif state == 3 then
 		if til == 153 or til == 136 then
