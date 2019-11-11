@@ -82,7 +82,7 @@ function _update()
 	
 	if(state < 5 and dialog_state==0) then
 		player_move()
-		if btnp(5) and not p_moving then 
+		if btnp(5) then 
 			add_inventory() 
 			puzzle_select()
 			win_check()
@@ -218,6 +218,7 @@ function chem_con()
 				else
 					curr_key_item=104 --incorrect chemical
 				end
+				show_dialog({"you received\nMYSTERIOUS\nCHEMICAL!"},55,105)
 				chem_anim=0
 				chem_mix={}
 			end
@@ -834,9 +835,12 @@ function puzzle_select()
 		end
 		if til >= 84 and til <= 86 then
 			show_dialog({"there's something\nwritten on the\nchalkboard",
-			"\"I HAVE CRAFTED AN\nEXPLOSIVE CHEMICAL\nLIKE NO OTHER!",
-			"IT'S totally PALE\nAND not DARK\nPURPLE!",
-			"I'VE DECIDED TO\nCALL IT 'friend'.\"\n"},55,107)
+			"\"I HAVE CRAFTED AN\nEXPLOSIVE CHEMICAL\nLIKE NO OTHER!\"",
+			"\"IT EXPLODES WHEN\nEXPOSED TO JUST\nA LITLE HEAT!\"",
+			"\"SOMETHING LIKE A\nSTOVE FIRE...\"",
+			"\"IT'S totally PALE\nAND not DARK\nPURPLE!\"",
+			"\"I'VE DECIDED TO\nCALL IT 'friend.'\"\n",
+			"\"I'M THE ONLY ONE\nTHAT KNOWS HOW TO\nMAKE friend!\""},55,107)
 		--chalkboard
 		end
 		if til==64 or til==65 then
