@@ -125,7 +125,7 @@ function _draw()
 	end
 	exp_draw()
 end
--->8
+-->8\
 --destiny--
 --main entryway, 16x16--
 mainroom = {
@@ -196,18 +196,6 @@ end
 
 function chem_con()
 	if sel_color==0 then
-		if btnp(0) then sel_color=12
-		elseif btnp(1) then sel_color=10
-		elseif btnp(2) then sel_color=1
-		elseif btnp(3) then sel_color=8
-		elseif btnp(4) then sel_color=13
-		elseif btnp(5) then sel_color=11
-		end
-		if sel_color~=0 and not chem_mix_contains(sel_color) then
-			add(chem_mix,sel_color)
-		else
-			sel_color=0
-		end
 		if #chem_sol==#chem_mix then
 			chem_anim+=1
 			if chem_anim==30 then
@@ -221,6 +209,21 @@ function chem_con()
 				chem_anim=0
 				chem_mix={}
 			end
+		end
+		if btnp(5,1) and #chem_mix < #chem_sol then
+			state=2
+			return
+		elseif btnp(0,0) then sel_color=12
+		elseif btnp(1,0) then sel_color=10
+		elseif btnp(2,0) then sel_color=1
+		elseif btnp(3,0) then sel_color=8
+		elseif btnp(4,0) then sel_color=13
+		elseif btnp(5,0) then sel_color=11
+		end
+		if sel_color~=0 and not chem_mix_contains(sel_color) then
+			add(chem_mix,sel_color)
+		else
+			sel_color=0
 		end
 	end
 end
@@ -285,6 +288,7 @@ function chem_con_draw()
 		spr(118,12,12*i+21)
 	end
 	pal(15,15)
+	print("a:quit",3,21,7)
 end
 
 function chem_order_draw()
@@ -860,34 +864,33 @@ function puzzle_select()
 			show_dialog({"there's something\nwritten on the\nchalkboard",
 			"\"I HAVE CRAFTED AN\nEXPLOSIVE CHEMICAL\nLIKE NO OTHER!\"",
 			"\"IT EXPLODES WHEN\nEXPOSED TO JUST\nA LITLE HEAT!\"",
-			"\"SOMETHING LIKE A\nSTOVE FIRE...\"",
-			"\"IT'S totally PALE\nAND not DARK\nPURPLE!\"",
+			"\"IT'S definitely\nnot DARK PURPLE!\"\n",
 			"\"I'VE DECIDED TO\nCALL IT 'friend.'\"\n",
 			"\"I'M THE ONLY ONE\nTHAT KNOWS HOW TO\nMAKE friend!\""},55,107)
 		--chalkboard
 		end
 		if til==64 or til==65 then
 		--dark blue
-			show_dialog({"there are beakers\nlabeled 'LIfE' on\nthe table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'Freedom'\non the table"},55,107)
 		end
 		if til==80 or til==81 then
-			show_dialog({"there are beakers\nlabeled 'FrEEDOM'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'Renegade'\non the table"},55,107)
 		--red
 		end
 		if til==66 or til==67 then
-			show_dialog({"there are flasks\nlabeled 'ILLUSiON'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'Illusion'\non the table"},55,107)
 		--green
 		end
 		if til==82 or til==83 then
-			show_dialog({"there are flasks\nlabeled 'BeAUTY'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'Entropy'\non the table"},55,107)
 		--light blue
 		end
 		if til==96 or til==97 then
-			show_dialog({"there are beakers\nlabeled 'EnTROPY'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'Nature'\non the table"},55,107)
 		--indigo
 		end
 		if til==98 or til==99 then
-			show_dialog({"there are flasks\nlabeled 'dEATH'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'Death'\non the table"},55,107)
 		--yellow
 		end
 	elseif state == 3 then
