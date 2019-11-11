@@ -5,7 +5,7 @@ __lua__
 function _init()
 	final = false
 
-	music(0)
+	--music(0)
 
 	palt(0,false)
 	palt(14,true)
@@ -82,8 +82,8 @@ function _update()
 	if(state < 5 and dialog_state==0) then
 		player_move()
 		if btnp(5) then
-			add_inventory()
 			puzzle_select()
+			add_inventory()
 			win_check()
 		end
 	end
@@ -146,19 +146,17 @@ end
 		{19,19,19,19,19,19,19,33,34,19,19,19,19,19,19,19},
 		{19,19,19,19,19,19,19,49,50,19,19,19,19,19,19,19}
 	}
-flowers_solved = false
 
 function main_room_draw()
 	cls(0)
 	draw_room(mainroom)
 	--add a condition to only draw the doorway arrow when near or
 	-- standing on the doorways
-	--draw_flowers()
-	--if(puzzle_solved) then
-	--	spr(40,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
-	--else
-	spr(38,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
-	--end
+	if(d==true) then
+		spr(40,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	elseif(d==false) then
+		spr(38,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	end
 end
 
 function draw_flowers()
@@ -865,10 +863,13 @@ function puzzle_select()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			if(puzzle_solved == true) then
-				show_dialog({"The flowers are blooming."})
-			elseif(puzzle_solved == false) then
+			if(d == true) then
+				show_dialog({"The flowers are blooming."}, 55, 107)
+			elseif(d == false) then
 				show_dialog({"There's a vase of\nflowers on the\ntable.", "They look like\nthey could use\nsome water."},55,107)
+			end
+			if(curr_key_item == 147) then
+				show_dialog({"You poured the\nwater into the\nvase.", "the flowers are\nblooming..!"},55,107)
 			end
 		elseif(stan == 35 or stan == 51) then
 			--show_dialog({"this would be a\n"..
@@ -950,9 +951,9 @@ end
 
 function add_inventory()
 	if state == 1 and d == false then
-		if ((tile_facing() >= 6 and tile_facing() <= 8) or (tile_facing() >= 22 and tile_facing() <= 24)) and curr_key_item == 149 then
+		if (tile_facing() >= 6 and tile_facing() <= 8) or (tile_facing() >= 22 and tile_facing() <= 24) then
 			add(collected_pieces,124)
-			curr_key_item = -1
+			--curr_key_item = -1
 			d = true
 		end
 	elseif state == 4 and explo and not j then
