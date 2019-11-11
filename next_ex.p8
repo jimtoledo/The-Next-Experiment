@@ -79,7 +79,7 @@ function _update()
 	
 	if(state < 5 and dialog_state==0) then
 		player_move()
-		if btnp(5) then 
+		if btnp(5) and not p_moving then 
 			add_inventory() 
 			puzzle_select()
 			win_check()
@@ -638,7 +638,9 @@ end
 function exp_draw()
 	for i=1,#exp do
 		if exp[i].a then
-			circfill(exp[i].x,exp[i].y,exp[i].r,10)
+			circfill(exp[i].x,exp[i].y,
+			exp[i].r,
+			(rnd(2)+8))
 		end
 	end
 end	
