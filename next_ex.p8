@@ -79,7 +79,7 @@ function _update()
 	
 	if(state < 5 and dialog_state==0) then
 		player_move()
-		if btnp(5) then 
+		if btnp(5) and not p_moving then 
 			add_inventory() 
 			puzzle_select()
 			win_check()
