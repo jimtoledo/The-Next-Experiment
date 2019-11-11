@@ -80,13 +80,13 @@ function _update()
 	if(state < 5 and dialog_state==0) then
 		player_move()
 		if btnp(5) then 
-			puzzle_select()
 			add_inventory() 
+			puzzle_select()
 			win_check()
 		end
 	end
 	if(dialog_state>0) dialog_update()
-	
+	exp_update()
 end
 
 function _draw()
@@ -121,6 +121,7 @@ function _draw()
 			print(runtime,2,2,7)
 		end
 	end
+	exp_draw()
 end
 -->8
 --destiny--
@@ -329,6 +330,12 @@ function mech_room_init()
 	sel.x = 3
 	sel.y = 5
 	sel.dir = "none"
+	
+	exp= {}
+	for i = 1, 100 do
+	add(exp,{x=0,y=0,dx=0,dy=0,r=0,m=0,a=false})
+	end
+	
 	mechroom = {
 	{192,192,193,192,194,195},
 	{192,192,209,192,210,211},
@@ -596,6 +603,45 @@ function puz_win()
  	return false
  end
 end
+
+function explode(x,y,r,p)
+	local final=0
+	for i=1,#exp do
+		if not exp[i].a then
+			exp[i].x = x
+			exp[i].y = y
+			exp[i].dx = -1+rnd(2)
+			exp[i].dx = -1+rnd(2)
+			exp[i].m = 0.5+rnd(2)
+			exp[i].r= 0.5+rnd(r)
+			exp[i].a = true
+			final += 1	
+		end
+		if (final == p) break
+	end	
+end
+
+
+function exp_update()
+	for i=1,#exp do
+		if exp[i].a then
+			exp[i].x += exp[i].dx / exp[i].m
+			exp[i].y += exp[i].dy / exp[i].m
+			exp[i].r -= 0.35
+			if exp[i].r < 0.1 then
+				exp[i].a = false
+			end
+		end
+	end
+end
+
+function exp_draw()
+	for i=1,#exp do
+		if exp[i].a then
+			circfill(exp[i].x,exp[i].y,exp[i].r,10)
+		end
+	end
+end	
 -->8
 --other stuff--
 --generic draw room function that displays 2-d array of sprites
@@ -851,6 +897,7 @@ function puzzle_select()
 		elseif til == 210 or til== 211 then
 			if curr_key_item==120 then
 				show_dialog({"you toss the\nchemical into\nthe stove","causing the stove\nto explode!"},55,105)
+				explode(80,12,3,80)
 				mechroom[1][5] =206
 				mechroom[1][6] =207
 				mechroom[2][5] =222
@@ -984,6 +1031,8 @@ function intro_draw()
 	print("trapped inside a dark castle",hcenter("trapped	inside a dark castle"),40,6)
 	print("figure out how to escape",hcenter("figure out how to escape"),50,6)
 	print("press ❎ to begin",hcenter("press ❎ to begin"),100,6)
+	pal(5,0)
+	pal(0,5)
 	i = 112
 	a = 1
 	x = 0
@@ -996,6 +1045,8 @@ function intro_draw()
 		end
 		a+= 1
 	end
+	pal(5,5)
+	pal(0,0)
 end
 
 winroom = {
