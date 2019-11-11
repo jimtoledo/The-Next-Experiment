@@ -879,7 +879,6 @@ function puzzle_select()
 				show_dialog({"you toss the\nchemical into\nthe stove","causing the stove\nto explode!"},55,105)
 				explode(80,12,3,80)
 				sfx(0)
-				sfx(1)
 				mechroom[1][5] =206
 				mechroom[1][6] =207
 				mechroom[2][5] =222
@@ -1000,7 +999,6 @@ function small_font(x)
    end
   lowered = lowered..a	
 	end
-	
 	return lowered
 end
 		
