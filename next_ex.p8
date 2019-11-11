@@ -34,7 +34,7 @@ function _init()
 
 	controls = false
 
-	lights = false
+	lights = true
 
 	fail = false
 
@@ -152,11 +152,11 @@ function main_room_draw()
 	draw_room(mainroom)
 	--add a condition to only draw the doorway arrow when near or
 	-- standing on the doorways
-	draw_flowers()
+	--draw_flowers()
 	--if(puzzle_solved) then
 	--	spr(40,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
 	--else
-	--	spr(38,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	spr(38,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
 	--end
 end
 
@@ -864,11 +864,16 @@ function puzzle_select()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			show_dialog({"this would be a\n"..
-			"puzzle"},55,115)
+			if(puzzle_solved == true) then
+				show_dialog({"The flowers are blooming."})
+			elseif(puzzle_solved == false) then
+				show_dialog({"There's a vase of\nflowers on the\ntable.", "They look like\nthey could use\nsome water."},55,107)
+			end
 		elseif(stan == 35 or stan == 51) then
-			show_dialog({"this would be a\n"..
-			"puzzle"},55,115)
+			--show_dialog({"this would be a\n"..
+			--"puzzle"},55,115)
+			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.",
+			"'exp: 438'.", "what could that\nmean..?"}, 55, 110)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
@@ -886,26 +891,26 @@ function puzzle_select()
 		end
 		if til==64 or til==65 then
 		--dark blue
-			show_dialog({"there are beakers\nlabeled 'LIfE' on\nthe table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'LIfE' on\nthe table."},55,107)
 		end
 		if til==80 or til==81 then
-			show_dialog({"there are beakers\nlabeled 'FrEEDOM'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'FrEEDOM'\non the table."},55,107)
 		--red
 		end
 		if til==66 or til==67 then
-			show_dialog({"there are flasks\nlabeled 'ILLUSiON'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'ILLUSiON'\non the table."},55,107)
 		--green
 		end
 		if til==82 or til==83 then
-			show_dialog({"there are flasks\nlabeled 'BeAUTY'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'BeAUTY'\non the table."},55,107)
 		--light blue
 		end
 		if til==96 or til==97 then
-			show_dialog({"there are beakers\nlabeled 'EnTROPY'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'EnTROPY'\non the table."},55,107)
 		--indigo
 		end
 		if til==98 or til==99 then
-			show_dialog({"there are flasks\nlabeled 'dEATH'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'dEATH'\non the table."},55,107)
 		--yellow
 		end
 	elseif state == 3 then
@@ -918,7 +923,7 @@ function puzzle_select()
 			if not lights then
 				state = 7
 			else
-				show_dialog({"power is already\nrestored"},55,110)
+				show_dialog({"power is already\nrestored."},55,110)
 			end
 		elseif til == 210 or til== 211 then
 			if curr_key_item==120 then
@@ -933,7 +938,7 @@ function puzzle_select()
 				explo =true
 				curr_key_item=-1
 			elseif curr_key_item==104 then
-				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},55,105)
+				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens."},55,105)
 				curr_key_item=-1
 			end
 		end
@@ -942,6 +947,7 @@ end
 
 function add_inventory()
 	if state == 1 and d == false then
+		--add condition if water pitcher is in inv
 		if (tile_facing() >= 6 and tile_facing() <= 8) or (tile_facing() >= 22 and tile_facing() <= 24) then
 			add(collected_pieces,124)
 			d = true
@@ -964,8 +970,11 @@ function win_check()
 		if z and j and d and c then
 			set = time()
 			state = 5
+		elseif z or j or d or c then
+			show_dialog({"you do not yet\nhave all of the\npieces."},55,107)
 		else
-			show_dialog({"door is locked"},55,120)
+			show_dialog({"it's locked.", "you can see four\nimprints where\npanels are missing",
+			"you'll need to\nfind all of them\nto escape."},55,107)
 		end
 	end
 end
