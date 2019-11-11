@@ -510,45 +510,27 @@ function laser_con()
 end
 
 function wall_check(x,y,l)
-	if x < 1 or x > #l[1] then
-	 return true
-	end
-	if y < 1 or y > #l then
-	return true
-	end
+	if (x<1 or x>#l[1]) return true
+	if (y<1 or y>#l) return true
 	return false
 end
 
 function laser_map(d,l)
 	if sel.color == 221 then
 		lr = 215
-		ud = 216
-		ld = 217
-		rd = 218
-		ru = 219
-		lu = 220
 	elseif sel.color == 237 then
 		lr = 231
-		ud = 232
-		ld = 233
-		rd = 234
-		ru = 235
-		lu = 236
 	elseif sel.color == 205 then
 		lr = 199
-		ud = 200
-		ld = 201
-		rd = 202
-		ru = 203
-		lu = 204
 	elseif sel.color == 253 then
 		lr = 247
-		ud = 248
-		ld = 249
-		rd = 250
-		ru = 251
-		lu = 252
 	end
+	ud = lr+1
+	ld = lr+2
+	rd = lr+3
+	ru = lr+4
+	lu = lr+5
+	
 	if l[sel.y][sel.x]!= 214 and l[sel.y][sel.x]!= 198 and l[sel.y][sel.x]!= 246 and  l[sel.y][sel.x]!= 230  then
 		if d == "up" then
 			if sel.dir == "left" then
@@ -630,20 +612,14 @@ function exp_update()
 			exp[i].x += exp[i].dx / exp[i].m
 			exp[i].y += exp[i].dy / exp[i].m
 			exp[i].r -= 0.35
-			if exp[i].r < 0.1 then
-				exp[i].a = false
-			end
+			if (exp[i].r < 0.1) exp[i].a = false
 		end
 	end
 end
 
 function exp_draw()
 	for i=1,#exp do
-		if exp[i].a then
-			circfill(exp[i].x,exp[i].y,
-			exp[i].r,
-			(rnd(2)+8))
-		end
+		if(exp[i].a) circfill(exp[i].x,exp[i].y,	exp[i].r,(rnd(2)+8))
 	end
 end	
 -->8
