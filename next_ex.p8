@@ -70,7 +70,7 @@ function _update()
 			if not controls and state < 5 then
 				controls =true
 			end
-			if state == 5 then
+			if state == 5 and time() - set > 6 then
 				state = 6
 				_init()
 			elseif state == 6 then
@@ -82,7 +82,7 @@ function _update()
 	
 	if(state < 5 and dialog_state==0) then
 		player_move()
-		if btnp(5) and not p_moving then 
+		if btnp(5) then 
 			add_inventory() 
 			puzzle_select()
 			win_check()
@@ -126,7 +126,7 @@ function _draw()
 	end
 	exp_draw()
 end
--->8
+-->8\
 --destiny--
 --main entryway, 16x16--
 mainroom = {
@@ -197,18 +197,6 @@ end
 
 function chem_con()
 	if sel_color==0 then
-		if btnp(0) then sel_color=12
-		elseif btnp(1) then sel_color=10
-		elseif btnp(2) then sel_color=1
-		elseif btnp(3) then sel_color=8
-		elseif btnp(4) then sel_color=13
-		elseif btnp(5) then sel_color=11
-		end
-		if sel_color~=0 and not chem_mix_contains(sel_color) then
-			add(chem_mix,sel_color)
-		else
-			sel_color=0
-		end
 		if #chem_sol==#chem_mix then
 			chem_anim+=1
 			if chem_anim==30 then
@@ -222,6 +210,21 @@ function chem_con()
 				chem_anim=0
 				chem_mix={}
 			end
+		end
+		if btnp(5,1) and #chem_mix < #chem_sol then
+			state=2
+			return
+		elseif btnp(0,0) then sel_color=12
+		elseif btnp(1,0) then sel_color=10
+		elseif btnp(2,0) then sel_color=1
+		elseif btnp(3,0) then sel_color=8
+		elseif btnp(4,0) then sel_color=13
+		elseif btnp(5,0) then sel_color=11
+		end
+		if sel_color~=0 and not chem_mix_contains(sel_color) then
+			add(chem_mix,sel_color)
+		else
+			sel_color=0
 		end
 	end
 end
@@ -286,6 +289,7 @@ function chem_con_draw()
 		spr(118,12,12*i+21)
 	end
 	pal(15,15)
+	print("a:quit",3,21,7)
 end
 
 function chem_order_draw()
@@ -829,34 +833,33 @@ function puzzle_select()
 			show_dialog({"there's something\nwritten on the\nchalkboard",
 			"\"I HAVE CRAFTED AN\nEXPLOSIVE CHEMICAL\nLIKE NO OTHER!\"",
 			"\"IT EXPLODES WHEN\nEXPOSED TO JUST\nA LITLE HEAT!\"",
-			"\"SOMETHING LIKE A\nSTOVE FIRE...\"",
-			"\"IT'S totally PALE\nAND not DARK\nPURPLE!\"",
+			"\"IT'S definitely\nnot DARK PURPLE!\"\n",
 			"\"I'VE DECIDED TO\nCALL IT 'friend.'\"\n",
 			"\"I'M THE ONLY ONE\nTHAT KNOWS HOW TO\nMAKE friend!\""},55,107)
 		--chalkboard
 		end
 		if til==64 or til==65 then
 		--dark blue
-			show_dialog({"there are beakers\nlabeled 'LIfE' on\nthe table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'Freedom'\non the table"},55,107)
 		end
 		if til==80 or til==81 then
-			show_dialog({"there are beakers\nlabeled 'FrEEDOM'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'Renegade'\non the table"},55,107)
 		--red
 		end
 		if til==66 or til==67 then
-			show_dialog({"there are flasks\nlabeled 'ILLUSiON'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'Illusion'\non the table"},55,107)
 		--green
 		end
 		if til==82 or til==83 then
-			show_dialog({"there are flasks\nlabeled 'BeAUTY'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'Entropy'\non the table"},55,107)
 		--light blue
 		end
 		if til==96 or til==97 then
-			show_dialog({"there are beakers\nlabeled 'EnTROPY'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'Nature'\non the table"},55,107)
 		--indigo
 		end
 		if til==98 or til==99 then
-			show_dialog({"there are flasks\nlabeled 'dEATH'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'Death'\non the table"},55,107)
 		--yellow
 		end
 	elseif state == 3 then
@@ -962,6 +965,7 @@ function dialog_update()
 		if dialog_counter==1 then
 			dialog_counter=0
 			dialog_curr_char+=1
+			sfx(10)
 		end
 	elseif btnp(5) then
 		dialog_counter=0
@@ -1290,7 +1294,7 @@ __sfx__
 0130000000000000000000023510235102651026510285102851029510295102b510295102951028510265102451023510235102151021510215102051020510265102351021510205102151021510215102d500
 013000001551015510175101751018510185101a5101a510185101851017510155101551017510185101551015510175101751018510175101751015510155101451014510115101051014510155101551000000
 0130000021510215102351023510245102451026510265102451024510235102151021510235102451021510215102351023510245102351023510215102151020510205101d5101c51020510215102151000000
-010700000000000500025000050002500005001150000500025000000002500005000050500505065050c505165051f5051b505155050d50507505005050050501505085050d5051f505155050c5050750509505
+010300001852000500025000050002500005001150000500025000050002500005000050500505065050c505165051f5051b505155050d50507505005050050501505085050d5051f505155050c5050750509505
 010600001420014200222002220027200272003820038200142001420022200222002720027200382003820014200142002220022200272002720038200382000020000200002000020000200002000020000200
 __music__
 01 02030405
