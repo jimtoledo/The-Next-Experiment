@@ -321,7 +321,7 @@ end
 --state 9 for puzzle
 function serv_room_init()
 	num={0,0,0}
-	i=1
+	p=1
 
 servroom= {
 	{152,152,152,152,152,152,152,152,152,152,152},
@@ -356,11 +356,11 @@ function lock_draw()
 	print(num[2],62,21,0)
 	print(num[3],62,36,0)
 
-	if i==1 then
+	if p==1 then
 		sspr(88,72,8,8,40,0,45,17)
-	elseif i==2 then
+	elseif p==2 then
 		sspr(88,72,8,8,40,15,45,17)
-	elseif i==3 then
+	elseif p==3 then
 		sspr(88,72,8,8,40,30,45,17)
 	end
 	
@@ -371,27 +371,34 @@ end
 
 function lock_con()
 	if btnp(2) then
-		i-=1
-		if i==0 then
-			i=3
+		p-=1
+		if p==0 then
+			p=3
 		end
 	elseif btnp(3) then
-		i+=1
-		if i==4 then
-			i=1
+		p+=1
+		if p==4 then
+			p=1
 		end
 	elseif btnp(0) then
-		num[i]-=1
-		if num[i]==-1 then
-			num[i]=9
+		num[p]-=1
+		if num[p]==-1 then
+			num[p]=9
 		end	
 	elseif btnp(1) then
-		num[i]+=1
-		if num[i]==10  then
-			num[i]=0
+		num[p]+=1
+		if num[p]==10  then
+			num[p]=0
 		end
 	end
-	lock_solve()
+	
+	if btnp(4) then
+		state=3
+	end
+	
+	if lock_solve() then
+		state=3
+	end
 end
 
 function lock_solve()
@@ -406,7 +413,7 @@ function cons()
 	rect(2,85,127,127,7)
 	print(
 	"⬅️⬇️⬆️➡️: change numbers\n\n"..
-	"enter the correct number\n\n".. 
+	"enter the correct number\n".. 
 	"to unlock the fridge.\n\n"..
 	"z: exit",4,88,7) 
 end
