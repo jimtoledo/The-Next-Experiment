@@ -213,7 +213,8 @@ function chem_con()
 		end
 		if btnp(5,1) and #chem_mix < #chem_sol then
 			state=2
-			return
+		elseif btn(0,1) and #chem_mix < #chem_sol then
+			chem_mix={}
 		elseif btnp(0,0) then sel_color=12
 		elseif btnp(1,0) then sel_color=10
 		elseif btnp(2,0) then sel_color=1
@@ -282,13 +283,14 @@ end
 
 function chem_con_draw()
 	rect(14,104,114,127,7)
-	print("mix the chemicals in the\ncorrect order to concoct\na useful item",17,107,7)
+	print("try to mix the chemicals\nin the correct order",17,107,7)
 	print("⬆️\n\n⬇️\n\n⬅️\n\n➡️\n\nz\n\nx",3,33,7)
 	for i=1,6 do
 		pal(15,chem_colors[i])
 		spr(118,12,12*i+21)
 	end
 	pal(15,15)
+	print("s:reset",3,9,7)
 	print("a:quit",3,21,7)
 end
 
