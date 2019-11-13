@@ -342,10 +342,6 @@ function serv_room_draw()
 	spr(149,52,40)
 end
 
-function lock_puz_draw()
-	cls()
-	draw_room(lockpuzz)
-end
 
 function lock_draw()
 	cls()
@@ -392,8 +388,12 @@ function lock_con()
 		if num[pad_sel]==10  then
 			num[pad_sel]=0
 		end
+	elseif btnp(4) then
+		state=3
 	end
-	lock_solve()
+	if lock_solve() then
+		state=3
+	end
 end
 
 function lock_solve()
@@ -408,7 +408,7 @@ function cons()
 	rect(2,85,127,127,7)
 	print(
 	"⬅️⬇️⬆️➡️: change numbers\n\n"..
-	"enter the correct number\n\n".. 
+	"enter the correct number\n".. 
 	"to unlock the fridge.\n\n"..
 	"z: exit",4,88,7) 
 end
