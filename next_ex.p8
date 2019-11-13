@@ -323,7 +323,7 @@ end
 --state 9 for puzzle
 function serv_room_init()
 	num={0,0,0}
-	i=1
+	pad_sel=1
 
 servroom= {
 	{152,152,152,152,152,152,152,152,152,152,152},
@@ -358,11 +358,11 @@ function lock_draw()
 	print(num[2],62,21,0)
 	print(num[3],62,36,0)
 
-	if i==1 then
+	if pad_sel==1 then
 		sspr(88,72,8,8,40,0,45,17)
-	elseif i==2 then
+	elseif pad_sel==2 then
 		sspr(88,72,8,8,40,15,45,17)
-	elseif i==3 then
+	elseif pad_sel==3 then
 		sspr(88,72,8,8,40,30,45,17)
 	end
 	
@@ -373,24 +373,24 @@ end
 
 function lock_con()
 	if btnp(2) then
-		i-=1
-		if i==0 then
-			i=3
+		pad_sel-=1
+		if pad_sel==0 then
+			pad_sel=3
 		end
 	elseif btnp(3) then
-		i+=1
-		if i==4 then
-			i=1
+		pad_sel+=1
+		if pad_sel==4 then
+			pad_sel=1
 		end
 	elseif btnp(0) then
-		num[i]-=1
-		if num[i]==-1 then
-			num[i]=9
+		num[pad_sel]-=1
+		if num[pad_sel]==-1 then
+			num[pad_sel]=9
 		end	
 	elseif btnp(1) then
-		num[i]+=1
-		if num[i]==10  then
-			num[i]=0
+		num[pad_sel]+=1
+		if num[pad_sel]==10  then
+			num[pad_sel]=0
 		end
 	end
 	lock_solve()
