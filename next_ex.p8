@@ -334,12 +334,15 @@ servroom= {
 	{128,147,147,147,143,144,147,147,147,147,147},
 	{141,147,147,147,145,146,142,147,147,147,147},
 	{102,147,147,147,147,147,147,147,147,147,147}}
+	
+	jug_taken=false
+	
 end
 
 function serv_room_draw()
 	cls()
 	draw_room(servroom)
-	spr(149,52,40)
+	if(not jug_taken) spr(149,52,40)
 end
 
 
@@ -393,6 +396,9 @@ function lock_con()
 	end
 	if lock_solve() then
 		state=3
+		add(collected_pieces,126)
+		c = true
+		sfx(1)
 	end
 end
 
@@ -949,7 +955,11 @@ function puzzle_select()
 			show_dialog({"this would be a\n"..
 			"puzzle"},55,110)
 		elseif til==136 or til==140 then
-			state =9
+			if c then
+				show_dialog({"you have already\nsolved this puzzle\n"},55,110)
+			else
+				state = 9
+			end
 		end
 	elseif state == 4 then
 		if til == 209 then
@@ -986,16 +996,13 @@ function add_inventory()
 			d = true
 			sfx(1)
 		end
+	elseif state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken and curr_key_item==-1 then
+			curr_key_item=149
+			jug_taken=true
 	elseif state == 4 and explo and not j then
 		if tile_facing() == 222 or tile_facing() == 223  then
 			add(collected_pieces,127)
 			j = true
-			sfx(1)
-		end
-	elseif state == 3 and c == false then
-		if tile_facing() == 136 then
-			add(collected_pieces,126)
-			c = true
 			sfx(1)
 		end
 	end
