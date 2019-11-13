@@ -216,7 +216,8 @@ function chem_con()
 		end
 		if btnp(5,1) and #chem_mix < #chem_sol then
 			state=2
-			return
+		elseif btn(0,1) and #chem_mix < #chem_sol then
+			chem_mix={}
 		elseif btnp(0,0) then sel_color=12
 		elseif btnp(1,0) then sel_color=10
 		elseif btnp(2,0) then sel_color=1
@@ -285,13 +286,14 @@ end
 
 function chem_con_draw()
 	rect(14,104,114,127,7)
-	print("mix the chemicals in the\ncorrect order to concoct\na useful item",17,107,7)
+	print("try to mix the chemicals\nin the correct order",17,107,7)
 	print("⬆️\n\n⬇️\n\n⬅️\n\n➡️\n\nz\n\nx",3,33,7)
 	for i=1,6 do
 		pal(15,chem_colors[i])
 		spr(118,12,12*i+21)
 	end
 	pal(15,15)
+	print("s:reset",3,9,7)
 	print("a:quit",3,21,7)
 end
 
@@ -321,7 +323,7 @@ end
 --state 9 for puzzle
 function serv_room_init()
 	num={0,0,0}
-	p=1
+	pad_sel=1
 
 servroom= {
 	{152,152,152,152,152,152,152,152,152,152,152},
@@ -340,10 +342,6 @@ function serv_room_draw()
 	spr(149,52,40)
 end
 
-function lock_puz_draw()
-	cls()
-	draw_room(lockpuzz)
-end
 
 function lock_draw()
 	cls()
@@ -356,11 +354,11 @@ function lock_draw()
 	print(num[2],62,21,0)
 	print(num[3],62,36,0)
 
-	if p==1 then
+	if pad_sel==1 then
 		sspr(88,72,8,8,40,0,45,17)
-	elseif p==2 then
+	elseif pad_sel==2 then
 		sspr(88,72,8,8,40,15,45,17)
-	elseif p==3 then
+	elseif pad_sel==3 then
 		sspr(88,72,8,8,40,30,45,17)
 	end
 	
@@ -371,31 +369,28 @@ end
 
 function lock_con()
 	if btnp(2) then
-		p-=1
-		if p==0 then
-			p=3
+		pad_sel-=1
+		if pad_sel==0 then
+			pad_sel=3
 		end
 	elseif btnp(3) then
-		p+=1
-		if p==4 then
-			p=1
+		pad_sel+=1
+		if pad_sel==4 then
+			pad_sel=1
 		end
 	elseif btnp(0) then
-		num[p]-=1
-		if num[p]==-1 then
-			num[p]=9
+		num[pad_sel]-=1
+		if num[pad_sel]==-1 then
+			num[pad_sel]=9
 		end	
 	elseif btnp(1) then
-		num[p]+=1
-		if num[p]==10  then
-			num[p]=0
+		num[pad_sel]+=1
+		if num[pad_sel]==10  then
+			num[pad_sel]=0
 		end
-	end
-	
-	if btnp(4) then
+	elseif btnp(4) then
 		state=3
 	end
-	
 	if lock_solve() then
 		state=3
 	end
