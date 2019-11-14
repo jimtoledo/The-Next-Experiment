@@ -131,7 +131,7 @@ function _draw()
 	end
 	exp_draw()
 end
--->8\
+-->8
 --destiny--
 --main entryway, 16x16--
 mainroom = {
