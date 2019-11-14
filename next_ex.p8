@@ -5,7 +5,9 @@ __lua__
 --music from: https://youtu.be/7umg6zrieh8--
 function _init()
 	final = false
+	
 	music(0,2000)
+	
 	palt(0,false)
 	palt(14,true)
 	--p_x and p_y are the indexes of the room arrays
@@ -21,7 +23,7 @@ function _init()
 	p_moving=false
 
 	state = 6
-
+	
 	timer_mins = 6
 	timer_secs = 0
 	timer_ticks = 0
@@ -32,13 +34,13 @@ function _init()
 	j =false
 	z= false
 	c =false
-
+	
 	controls = false
-
-	lights = true
-
+	
+	lights = false
+	
 	fail = false
-
+	
 	--dialog stuff--
 	dialog_state=0 --0 is not currently in dialog
 	dialog_messages={} --dialog to show (manipulated through different functions)
@@ -46,11 +48,12 @@ function _init()
 	dialog_counter=0 --animating dialog
 	print_x=0
 	print_y=0
-
+	
 	mech_room_init()
 	lab_room_init()
-	main_room_init()
 	serv_room_init()
+	mainroom_init()
+	
 	explo = false
 end
 
@@ -59,7 +62,7 @@ function _update()
 		fail = true
 		state= 5
 	end
-
+	
 	if dialog_state==0 then
 		if state == 7 then
 			laser_con()
@@ -71,7 +74,7 @@ function _update()
 			if not controls and state < 5 then
 				controls =true
 			end
-			if state == 5 and time() - set > 6 then
+			if state == 5 and(fail or time() - set > 6)  then
 				state = 6
 				_init()
 			elseif state == 6 then
@@ -80,18 +83,18 @@ function _update()
 			end
 		end
 	end
-
+	
 	if(state < 5 and dialog_state==0) then
 		player_move()
-		if btnp(5) then
+		if btnp(5)and not p_moving then 
+			add_inventory() 
 			puzzle_select()
-			add_inventory()
 			win_check()
-
 		end
 	end
 	if(dialog_state>0) dialog_update()
 	exp_update()
+	flowers_update()
 end
 
 function _draw()
@@ -114,7 +117,7 @@ function _draw()
 	elseif state == 9 then
 		lock_draw()
 	end
-
+	
 	if state < 5 or state>=7 then
 		if state < 5 then
 			inv_display()
@@ -122,18 +125,20 @@ function _draw()
 			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
-		if timer_mins <= 1 then
+		if timer_mins <= 0 then
 			print(runtime,2,2,8)
 		else
 			print(runtime,2,2,7)
 		end
 	end
 	exp_draw()
+	draw_flowers()
 end
--->8\
+-->8
 --destiny--
 --main entryway, 16x16--
-function main_room_init()
+function mainroom_init()
+
 	mainroom = {
 		{1,2,1,2,1,2,1,4,5,2,1,2,1,2,1,2},
 		{17,18,17,18,17,18,17,20,21,18,17,18,17,18,17,18},
@@ -152,32 +157,17 @@ function main_room_init()
 		{19,19,19,19,19,19,19,33,34,19,19,19,19,19,19,19},
 		{19,19,19,19,19,19,19,49,50,19,19,19,19,19,19,19}
 	}
-	flowers_solved = false
-	flower_draw = true
-	flower_spr = 38
-	dilay=10
-end
-
-function main_room_update()
-	local t = tile_facing()
-	x = 0
-	if(f_spr > 40) then f_spr = 38 end
-	-- TO DO: add condition that pitcher is in inventory
-	if (t >= 6 and t <= 8) or (t >= 22 and t <= 24) then
-		while x < 2 do
-			if(time() - flower_anim_time > 1) then
-				f_spr+=1
-				spr(f_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
-				flower_anim_time = time()
-			end
-			x+=1
-		end
-	end
+flowers_solved = false
+flower_draw = true
+flower_spr = 38
+dilay=20
 end
 
 function main_room_draw()
 	cls(0)
 	draw_room(mainroom)
+	--add a condition to only draw the doorway arrow when near or
+	-- standing on the doorways
 	if not lights then
 		for i=2,15 do
 			pal(i,1)
@@ -191,6 +181,24 @@ function main_room_draw()
 	palt(0,false)
 	palt(14,true)
 end
+
+function flowers_update()
+	if not flower_draw then
+		dilay -= 1
+		if dilay <0 then
+			flower_spr += 1
+			dilay=20
+		end
+	end
+	if (flower_spr == 40) flower_draw = true
+end
+
+function draw_flowers()
+	if not flower_draw then
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	end
+end
+
 -->8
 --jimbob--
 function lab_room_init()
@@ -209,7 +217,7 @@ function lab_room_init()
 	{19,19,19,96,97,19,19,98,99,19,19,19},
 	{19,19,19,19,19,19,19,19,19,19,19,19},
 	{19,19,19,19,19,19,19,19,19,19,19,19}}
-
+	
 	chem_colors={1,8,12,10,13,11}
 	chem_sol={1,8,11,12,13,10} --numbers represent colors of chemicals (dark blue,red,green,light blue,light indigo,yellow)
 	chem_mix={}
@@ -307,7 +315,7 @@ function chem_draw()
 	sspr(spr_x,spr_y,8,8,28,16,84,84)
 	if #chem_mix>1 and chem_anim>0 and sel_color~=0 then
 		if(#chem_mix==2) pal(15,chem_mix[1])
-		if chem_anim<24 then
+		if chem_anim<24 then 
 			sspr(80,56,8,8,28,16,84,84)
 		elseif chem_anim<48 then
 			sspr(88,56,8,8,28,16,84,84)
@@ -368,9 +376,9 @@ servroom= {
 	{128,147,147,147,143,144,147,147,147,147,147},
 	{141,147,147,147,145,146,142,147,147,147,147},
 	{102,147,147,147,147,147,147,147,147,147,147}}
-
+	
 	jug_taken=false
-
+	
 end
 
 function serv_room_draw()
@@ -382,7 +390,7 @@ end
 
 function lock_draw()
 	cls()
-
+ 
  sspr(80,72,8,8,36,0,54,17)
  sspr(80,72,8,8,36,15,54,17)
  sspr(80,72,8,8,36,30,54,17)
@@ -398,9 +406,9 @@ function lock_draw()
 	elseif pad_sel==3 then
 		sspr(88,72,8,8,40,30,45,17)
 	end
-
+	
 	palt(14,true)
-
+	
 	cons()
 end
 
@@ -419,7 +427,7 @@ function lock_con()
 		num[pad_sel]-=1
 		if num[pad_sel]==-1 then
 			num[pad_sel]=9
-		end
+		end	
 	elseif btnp(1) then
 		num[pad_sel]+=1
 		if num[pad_sel]==10  then
@@ -448,9 +456,9 @@ function cons()
 	rect(2,85,127,127,7)
 	print(
 	"⬅️⬇️⬆️➡️: change numbers\n\n"..
-	"enter the correct number\n"..
+	"enter the correct number\n".. 
 	"to unlock the fridge.\n\n"..
-	"z: exit",4,88,7)
+	"z: exit",4,88,7) 
 end
 -->8
 --zoe--
@@ -460,12 +468,12 @@ function mech_room_init()
 	sel.x = 3
 	sel.y = 5
 	sel.dir = "none"
-
+	
 	exp= {}
 	for i = 1, 100 do
 	add(exp,{x=0,y=0,dx=0,dy=0,r=0,m=0,a=false})
 	end
-
+	
 	mechroom = {
 	{192,192,193,192,194,195},
 	{192,192,209,192,210,211},
@@ -475,7 +483,7 @@ function mech_room_init()
 	{208,208,208,208,208,208},
 	{208,208,208,208,208,208},
 	{212,208,208,208,196,197}}
-
+	
 	laser_puz = {
 	{208,208,208,208,208},
 	{208,230,208,208,208},
@@ -487,7 +495,7 @@ function mech_room_init()
 	{208,208,198,208,246},
 	{208,208,214,208,208},
 	{214,230,246,208,208}}
-
+	
 	puz_ans = {
 	{218,215,215,215,217},
 	{216,230,202,201,216},
@@ -500,7 +508,7 @@ function mech_room_init()
 	{216,232,214,220,248},
 	{214,230,246,247,252}}
 end
-
+	
 function mech_room_draw()
 	cls()
 	draw_room(mechroom)
@@ -512,7 +520,7 @@ function laser_draw()
 	x =64-((#laser_puz[1]/2)*8)
  y = 0
  for i=1,#laser_puz do
- 	for j=1,#laser_puz[1] do
+ 	for j=1,#laser_puz[1] do	
 			spr(laser_puz[i][j],x,y)
  		x+= 8
  	end
@@ -532,9 +540,9 @@ function draw_cons()
 	print(
 	"❎: select / deselect\n"..
 	"⬅️⬇️⬆️➡️: move\n\n"..
-	"connect wires "..
+	"connect wires ".. 
 	"to restore power\n\n"..
-	"z: exit",4,88,7)
+	"z: exit",4,88,7) 
 end
 
 function laser_con()
@@ -543,7 +551,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("left",laser_puz)
 			sel.dir = "left"
-		end
+		end	
 		sel.x -= 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.x+= 1
@@ -558,7 +566,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("right",laser_puz)
 			sel.dir = "right"
-		end
+		end	
 		sel.x += 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.x -= 1
@@ -573,7 +581,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("up",laser_puz)
 			sel.dir = "up"
-		end
+		end	
 		sel.y -= 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.y+= 1
@@ -588,7 +596,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("down",laser_puz)
 			sel.dir = "down"
-		end
+		end	
 		sel.y += 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.y-= 1
@@ -622,7 +630,7 @@ function laser_con()
 				sel.color = 237
 			end
 		end
-	end
+	end		 
 end
 
 function wall_check(x,y,l)
@@ -646,7 +654,7 @@ function laser_map(d,l)
 	rd = lr+3
 	ru = lr+4
 	lu = lr+5
-
+	
 	if l[sel.y][sel.x]!= 214 and l[sel.y][sel.x]!= 198 and l[sel.y][sel.x]!= 246 and  l[sel.y][sel.x]!= 230  then
 		if d == "up" then
 			if sel.dir == "left" then
@@ -689,7 +697,7 @@ function puz_win()
  y = 0
  num_cor = 0
  for i=1,#laser_puz do
- 	for j=1,#laser_puz[1] do
+ 	for j=1,#laser_puz[1] do	
 			if laser_puz[i][j] == puz_ans[i][j] then
 				num_cor +=1
 			end
@@ -719,10 +727,10 @@ function explode(x,y,r,p)
 			exp[i].m = 0.5+rnd(2)
 			exp[i].r= 0.5+rnd(r)
 			exp[i].a = true
-			final += 1
+			final += 1	
 		end
 		if (final == p) break
-	end
+	end	
 end
 
 
@@ -741,7 +749,7 @@ function exp_draw()
 	for i=1,#exp do
 		if(exp[i].a) circfill(exp[i].x,exp[i].y,	exp[i].r,(rnd(2)+8))
 	end
-end
+end	
 -->8
 --other stuff--
 --generic draw room function that displays 2-d array of sprites
@@ -771,7 +779,7 @@ function draw_room(room)
 			pal()
 			palt(0,false)
 			palt(14,true)
-		end
+		end		
 			spr(room[i][j],x,y)
  		x+= 8
  	end
@@ -915,7 +923,7 @@ function door_check()
 				state = 2
 				p_x=5
 				p_y=2
-			end
+			end								
 		elseif state==2 then
 			state = 1
 			p_y=15
@@ -937,21 +945,24 @@ function door_check()
 end
 
 function puzzle_select()
-	local til = tile_facing()
+		local til = tile_facing()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			if(d == true) then
-				show_dialog({"The flowers are\nblooming."}, 55, 107)
-			elseif(d == false) then
-				show_dialog({"There's a vase of\nflowers on the\ntable.", "They look like\nthey could use\nsome water."},55,107)
-			end
-			if(curr_key_item == 147) then
-				show_dialog({"You poured the\nwater into the\nvase.", "the flowers are\nblooming..!"},55,107)
+			if(flowers_solved == true) then
+				show_dialog({"the flowers\nhave bloomed."},55,107)
+			elseif not flowers_solved and curr_key_item!= 149 then
+				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},55,107)
+			elseif not flowers_solved and curr_key_item == 149 then
+				ctime = time()
+				flower_draw = false
+				flowers_solved = true
+				add(collected_pieces,124)
+				sfx(1)
+				curr_key_item = -1
+				d = true
 			end
 		elseif(stan == 35 or stan == 51) then
-			--show_dialog({"this would be a\n"..
-			--"puzzle"},55,115)
 			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.",
 			"'exp: 438'.", "what could that\nmean..?"}, 55, 110)
 		end
@@ -961,42 +972,39 @@ function puzzle_select()
 		end
 		if til >= 84 and til <= 86 then
 			show_dialog({"there's something\nwritten on the\nchalkboard",
-			"\"I HAVE CRAFTED AN\nEXPLOSIVE CHEMICAL\nLIKE NO OTHER!\"",
-			"\"IT EXPLODES WHEN\nEXPOSED TO JUST\nA LITLE HEAT!\"",
-			"\"IT'S definitely\nnot DARK PURPLE!\"\n",
-			"\"I'VE DECIDED TO\nCALL IT 'friend.'\"\n",
-			"\"I'M THE ONLY ONE\nTHAT KNOWS HOW TO\nMAKE friend!\""},55,107)
+			"\"i have crafted an\nexplosive chemical\nlike no other!\"",
+			"\"it explodes when\nexposed to just\na litle heat!\"",
+			"\"it's definitely\nnot dark purple!\"\n",
+			"\"i've decided to\ncall it 'friend.'\"\n",
+			"\"i'm the only one\nthat knows how to\nmake friend!\""},55,107)
 		--chalkboard
 		end
 		if til==64 or til==65 then
 		--dark blue
-			show_dialog({"there are beakers\nlabeled 'Freedom'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'freedom'\non the table"},55,107)
 		end
 		if til==80 or til==81 then
-			show_dialog({"there are beakers\nlabeled 'Renegade'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'renegade'\non the table"},55,107)
 		--red
 		end
 		if til==66 or til==67 then
-			show_dialog({"there are flasks\nlabeled 'Illusion'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'illusion'\non the table"},55,107)
 		--green
 		end
 		if til==82 or til==83 then
-			show_dialog({"there are flasks\nlabeled 'Entropy'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'entropy'\non the table"},55,107)
 		--light blue
 		end
 		if til==96 or til==97 then
-			show_dialog({"there are beakers\nlabeled 'Nature'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'nature'\non the table"},55,107)
 		--indigo
 		end
 		if til==98 or til==99 then
-			show_dialog({"there are flasks\nlabeled 'Death'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'death'\non the table"},55,107)
 		--yellow
 		end
 	elseif state == 3 then
-		if til == 153 then
-			show_dialog({"this would be a\n"..
-			"puzzle"},55,110)
-		elseif til==136 or til==140 then
+		if til==136 or til==140 then
 			if c then
 				show_dialog({"you have already\nsolved this puzzle\n"},55,110)
 			else
@@ -1008,7 +1016,7 @@ function puzzle_select()
 			if not lights then
 				state = 7
 			else
-				show_dialog({"power is already\nrestored."},55,110)
+				show_dialog({"power is already\nrestored"},55,110)
 			end
 		elseif til == 210 or til== 211 then
 			if curr_key_item==120 then
@@ -1024,7 +1032,7 @@ function puzzle_select()
 				explo =true
 				curr_key_item=-1
 			elseif curr_key_item==104 then
-				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens."},55,105)
+				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},55,105)
 				curr_key_item=-1
 			end
 		end
@@ -1032,15 +1040,7 @@ function puzzle_select()
 end
 
 function add_inventory()
-	if state == 1 and d == false then
-		if (tile_facing() >= 6 and tile_facing() <= 8) or (tile_facing() >= 22 and tile_facing() <= 24) then
-			main_room_update()
-			add(collected_pieces,124)
-			--curr_key_item = -1
-			d = true
-			sfx(1)
-		end
-	elseif state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken and curr_key_item==-1 then
+	if state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken and curr_key_item==-1 then
 			curr_key_item=149
 			jug_taken=true
 	elseif state == 4 and explo and not j then
@@ -1057,11 +1057,8 @@ function win_check()
 		if z and j and d and c then
 			set = time()
 			state = 5
-		elseif z or j or d or c then
-			show_dialog({"you do not yet\nhave all of the\npieces."},55,107)
 		else
-			show_dialog({"it's locked.", "you can see four\nimprints where\npanels are missing",
-			"you'll need to\nfind all of them\nto escape."},55,107)
+			show_dialog({"door is locked"},55,120)
 		end
 	end
 end
@@ -1078,7 +1075,7 @@ function game_timer()
 	else
 		timer_ticks +=1
 	end
-
+	
 	if timer_secs <10 then
 	 game_time = timer_mins..":0"..timer_secs
 	else
@@ -1115,8 +1112,8 @@ function dialog_update()
 		end
 	end
 	dialog_counter+=1
-end
-
+end	
+	
 function dialog_draw()
 	local button=""
 	if dialog_curr_char==#dialog_messages[dialog_state] then
@@ -1128,7 +1125,7 @@ end
 
 function small_font(x)
 	lowered =""
-
+	
 	for i = 1, #x do
 		local a = sub(x,i,i)
 			if a>="a" and a<="z" then
@@ -1139,11 +1136,11 @@ function small_font(x)
       end
     end
    end
-  lowered = lowered..a
+  lowered = lowered..a	
 	end
 	return lowered
 end
-
+		
 -->8
 --intro/outtro code--
 function intro_draw()
@@ -1172,40 +1169,44 @@ function intro_draw()
 end
 
 winroom = {
-	{1,2,1,2,1,2,1,4,5,2,1,2,1,2,1,2},
-	{17,18,17,18,17,18,17,20,21,18,17,18,17,18,17,18},
-	{3,3,3,3,3,3,3,36,37,3,3,3,3,3,3,3},
-	{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-	{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-	{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-	{102,19,19,19,19,19,19,19,19,19,19,19,19,19,19,101},
-	{19,19,19,19,19,19,19,6,7,8,19,19,19,19,19,19},
-	{19,19,19,19,19,19,19,22,23,24,19,19,19,19,19,19},
-	{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-	{35,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-	{51,19,19,19,19,19,19,19,19,19,19,19,19,19,19,25},
-	{19,19,19,19,19,19,19,19,19,19,19,19,38,39,40,41},
-	{19,19,19,19,19,19,19,19,19,19,19,19,54,55,56,41},
-	{19,19,19,19,19,19,19,33,34,19,19,19,19,19,19,57},
-	{19,19,19,19,19,19,19,49,50,19,19,19,19,19,19,19}
-}
+		{1,2,1,2,1,2,1,4,5,2,1,2,1,2,1,2},
+		{17,18,17,18,17,18,17,20,21,18,17,18,17,18,17,18},
+		{3,3,3,3,3,3,3,36,37,3,3,3,3,3,3,3},
+		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{102,19,19,19,19,19,19,19,19,19,19,19,19,19,19,101},
+		{19,19,19,19,19,19,19,6,7,8,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,22,23,24,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{35,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{51,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,33,34,19,19,19,19,19,19,19},
+		{19,19,19,19,19,19,19,49,50,19,19,19,19,19,19,19}
+	}
 function win_draw()
 	if not fail then
 		if time()-set <= 6 then
 			win_animation()
 			draw_room(winroom)
+			spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
 			print(runtime,2,2,7)
 		else
 			cls(5)
 			if final then
 				--final--
 				con_animation()
+				---------
 			end
 			if (time()-set >= 12) music(-1,2000)
+			
+			
 			print("time left: "..runtime,hcenter("time left: "..runtime),70,6)
 			print("you have escaped",hcenter("you have escaped"),80,6)
 			print("press ❎ to play again",hcenter("press ❎ to play again"),90,6)
-
+		
 			i = 112
 			a = 1
 			x = 0
@@ -1223,14 +1224,14 @@ function win_draw()
 		cls(0)
 		print("you have failed",hcenter("you have failed"),60,8)
 		print("press ❎ to try again",hcenter("press ❎ to try again"),70,8)
-
+	
 		for i=2,15 do
 			pal(i,1)
 		end
 		pal(1,0)
 		pal(5,0)
 		pal(2,0)
-
+			
 		i = 112
 		a = 1
 		x = 0
@@ -1246,11 +1247,11 @@ function win_draw()
 		pal()
 		palt(0,false)
 		palt(14,true)
-	end
-end
+	end		
+end	
 
 function win_animation()
-	if time()-set >= 1 then
+	if time()-set >= 1 then 
 		winroom[1][8] = 240
 	end
 	if time()-set >= 2 then
@@ -1262,7 +1263,7 @@ function win_animation()
 	if time()-set >= 4 then
 		winroom[3][9] = 243
 	end
-
+	
 	if time()-set >= 5 then
 		winroom[1][8] = 226
 		winroom[1][9] = 227
@@ -1287,14 +1288,14 @@ function hcenter(s)
   return 64-#s*2
 end
 __gfx__
-000000001111111dd111111122222222222222222222222255599999999999999999955500000000000000000000000000000000000000000000000000000000
-0000000011dd11111111dd1124442444244444444444444255922222222222222222295500000000000000000000000000000000000000000000000000000000
-007007001d11d111111d11d124442444245225444452254259244444444444444444429500000000000000000000000000000000000000000000000000000000
-0007700011dd11111111dd1124442444242552444425524292444444444444444444442900000000000000000000000000000000000000000000000000000000
-000770001111111dd111111124442444242552444425524292444444444444444444442900000000000000000000000000000000000000000000000000000000
-00700700111111d11d11111124442444245225444452254292444444444444444444442900000000000000000000000000000000000000000000000000000000
-0000000011dd111dd111dd1124442444244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
-000000001d11d111111d11d122222222244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
+00000000d1111111d111111122222222222222222222222255599999999999999999955500000000000000000000000000000000000000000000000000000000
+00000000111dd1111111dd1124442444244444444444444255922222222222222222295500000000000000000000000000000000000000000000000000000000
+0070070011d11d11111d11d124442444245225444452254259244444444444444444429500000000000000000000000000000000000000000000000000000000
+00077000d11dd111d111dd1124442444242552444425524292444444444444444444442900000000000000000000000000000000000000000000000000000000
+000770001111111d1d11111124442444242552444425524292444444444444444444442900000000000000000000000000000000000000000000000000000000
+00700700d1111111d111111124442444245225444452254292444444444444444444442900000000000000000000000000000000000000000000000000000000
+00000000111dd1111111dd1124442444244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
+0000000011d11d11111d11d122222222244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
 0000000011dd11111111dd1155555555244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
 000000001111111dd111111155555555244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
 00000000111111d11d11111155555555244444944944444292244444444444444444422900000000000000000000000000000000000000000000000000000000
@@ -1361,12 +1362,12 @@ __gfx__
 444444455888888888888885999999994ff7777777777ff4299999946006600677777777999999945244dddddddd4425777777775dd5dd552555255554444444
 4455555554444444444444455555555599999999eeeeeeee59999999600660061111111111111111000000007777777700000000000000000000000000000000
 4444555554444444444444455555555599999999eeeeeeee54444444666666661a1111a11a1111a104499aa07eeeeee700000000000000000000000000000000
-4444445555444444444444555555555542222224eeeeeeee74444444dddddddd11a11a1111a11a1104499aa07eeeeee700000000000000000000000000000000
-4444445555544444444455555555555542744724666666ee54444444d000000d111111111111111104499aa07eeeeee700000000000000000000000000000000
-4444444555555444445555555555555542444424e6c6ee6e54444444d000000d11a11a1111a11a1104499aa07eeeeee700000000000000000000000000000000
-44444445555555522555555555555555424444246ccc6e6e54444444d000000d1a1111a11a1111a104499aa07eeeeee700000000000000000000000000000000
-444444455555522222255555555555554222222467cc66ee54444444d000000d111111111111111104499aa07eeeeee700000000000000000000000000000000
-4444444555555222222555555555555522222222e666eeee55555555222222221111111144444444000000007777777700000000000000000000000000000000
+4444445555444444444444555555555542222224e666666e74444444dddddddd11a11a1111a11a1104499aa07eeeeee700000000000000000000000000000000
+4444445555544444444455555555555542744724ee6c6ee654444444d000000d111111111111111104499aa07eeeeee700000000000000000000000000000000
+4444444555555444445555555555555542444424e6ccc6e654444444d000000d11a11a1111a11a1104499aa07eeeeee700000000000000000000000000000000
+4444444555555552255555555555555542444424e67cc66e54444444d000000d1a1111a11a1111a104499aa07eeeeee700000000000000000000000000000000
+4444444555555222222555555555555542222224ee666eee54444444d000000d111111111111111104499aa07eeeeee700000000000000000000000000000000
+4444444555555222222555555555555522222222eeeeeeee55555555222222221111111144444444000000007777777700000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1435,3 +1436,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
