@@ -191,8 +191,6 @@ function main_room_draw()
 	palt(0,false)
 	palt(14,true)
 end
-=======
->>>>>>> master
 -->8
 --jimbob--
 function lab_room_init()
