@@ -5,9 +5,7 @@ __lua__
 --music from: https://youtu.be/7umg6zrieh8--
 function _init()
 	final = false
-
 	music(0,2000)
-
 	palt(0,false)
 	palt(14,true)
 	--p_x and p_y are the indexes of the room arrays
@@ -53,7 +51,6 @@ function _init()
 	lab_room_init()
 	main_room_init()
 	serv_room_init()
-
 	explo = false
 end
 
@@ -194,19 +191,6 @@ function main_room_draw()
 	palt(0,false)
 	palt(14,true)
 end
-<<<<<<< HEAD
-
---function draw_flowers()
---	ctime = time()
-	--f_sprites = {38, 39, 40}
-	--for s in all(f_sprites) do
-		--if(time() - ctime > 1) then
-			--spr(s,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
-		--end
-	--	ctime = time()
---	end
---end
-
 =======
 >>>>>>> master
 -->8
@@ -988,28 +972,6 @@ function puzzle_select()
 		end
 		if til==64 or til==65 then
 		--dark blue
-<<<<<<< HEAD
-			show_dialog({"there are beakers\nlabeled 'LIfE' on\nthe table."},55,107)
-		end
-		if til==80 or til==81 then
-			show_dialog({"there are beakers\nlabeled 'FrEEDOM'\non the table."},55,107)
-		--red
-		end
-		if til==66 or til==67 then
-			show_dialog({"there are flasks\nlabeled 'ILLUSiON'\non the table."},55,107)
-		--green
-		end
-		if til==82 or til==83 then
-			show_dialog({"there are flasks\nlabeled 'BeAUTY'\non the table."},55,107)
-		--light blue
-		end
-		if til==96 or til==97 then
-			show_dialog({"there are beakers\nlabeled 'EnTROPY'\non the table."},55,107)
-		--indigo
-		end
-		if til==98 or til==99 then
-			show_dialog({"there are flasks\nlabeled 'dEATH'\non the table."},55,107)
-=======
 			show_dialog({"there are beakers\nlabeled 'Freedom'\non the table"},55,107)
 		end
 		if til==80 or til==81 then
@@ -1030,7 +992,6 @@ function puzzle_select()
 		end
 		if til==98 or til==99 then
 			show_dialog({"there are flasks\nlabeled 'Death'\non the table"},55,107)
->>>>>>> master
 		--yellow
 		end
 	elseif state == 3 then
@@ -1182,10 +1143,6 @@ function small_font(x)
    end
   lowered = lowered..a
 	end
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 	return lowered
 end
 
@@ -1245,11 +1202,8 @@ function win_draw()
 			if final then
 				--final--
 				con_animation()
-				---------
 			end
 			if (time()-set >= 12) music(-1,2000)
-
-
 			print("time left: "..runtime,hcenter("time left: "..runtime),70,6)
 			print("you have escaped",hcenter("you have escaped"),80,6)
 			print("press ❎ to play again",hcenter("press ❎ to play again"),90,6)
@@ -1481,9 +1435,6 @@ __sfx__
 010600001420014200222002220027200272003820038200142001420022200222002720027200382003820014200142002220022200272002720038200382000020000200002000020000200002000020000200
 __music__
 01 02030405
-<<<<<<< HEAD
-02 02030607
-=======
 00 02030607
 02 02030809
 
