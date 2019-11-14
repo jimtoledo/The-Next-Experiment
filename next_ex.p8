@@ -132,9 +132,9 @@ function _draw()
 		end
 	end
 	exp_draw()
-	draw_flowers()
+	draw_flower()
 end
--->8\
+-->8
 --destiny--
 --main entryway, 16x16--
 function main_room_init()
@@ -1443,4 +1443,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
