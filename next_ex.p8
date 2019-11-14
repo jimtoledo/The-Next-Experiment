@@ -37,7 +37,7 @@ function _init()
 	
 	controls = false
 	
-	lights = true
+	lights = false
 	
 	fail = false
 	
@@ -1009,7 +1009,7 @@ function puzzle_select()
 				curr_key_item = -1
 				d = true
 			elseif not flowers_solved and curr_key_item == 212 then
-				show_dialog({"the bucket is heavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
+				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
 				curr_key_item = -1
 			elseif not flowers_solved and curr_key_item!= 149 then
 				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
@@ -1229,6 +1229,8 @@ function lights_dialog()
 			puzzle_intro = true
 		elseif tile_facing() == 209 and puzzle_intro then
 			state = 7
+		elseif tile_facing() == 210 or tile_facing()==211 then
+			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 		else
 			show_dialog({"it is too dark\nto see anything"},55,115)
 		end	
