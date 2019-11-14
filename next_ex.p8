@@ -5,7 +5,10 @@ __lua__
 --music from: https://youtu.be/7umg6zrieh8--
 function _init()
 	final = false
-	music(0,2000)
+
+	music(0)
+
+
 	palt(0,false)
 	palt(14,true)
 	--p_x and p_y are the indexes of the room arrays
@@ -50,7 +53,7 @@ function _init()
 	mech_room_init()
 	lab_room_init()
 	main_room_init()
-	serv_room_init()
+
 	explo = false
 end
 
@@ -84,14 +87,14 @@ function _update()
 	if(state < 5 and dialog_state==0) then
 		player_move()
 		if btnp(5) then
-			puzzle_select()
 			add_inventory()
+			puzzle_select()
 			win_check()
-
 		end
 	end
 	if(dialog_state>0) dialog_update()
 	exp_update()
+	flowers_update()
 end
 
 function _draw()
@@ -129,6 +132,7 @@ function _draw()
 		end
 	end
 	exp_draw()
+	draw_flowers()
 end
 -->8\
 --destiny--
@@ -158,22 +162,6 @@ function main_room_init()
 	dilay=10
 end
 
-function main_room_update()
-	local t = tile_facing()
-	x = 0
-	if(f_spr > 40) then f_spr = 38 end
-	-- TO DO: add condition that pitcher is in inventory
-	if (t >= 6 and t <= 8) or (t >= 22 and t <= 24) then
-		while x < 2 do
-			if(time() - flower_anim_time > 1) then
-				f_spr+=1
-				spr(f_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
-				flower_anim_time = time()
-			end
-			x+=1
-		end
-	end
-end
 
 function main_room_draw()
 	cls(0)
@@ -191,6 +179,24 @@ function main_room_draw()
 	palt(0,false)
 	palt(14,true)
 end
+
+function flowers_update()
+	if not flower_draw then
+		dilay -= 1
+		if dilay <0 then
+			flower_spr += 1
+			dilay=10
+		end
+	end
+	if (flower_spr == 40) flower_draw = true
+end
+
+function draw_flowers()
+	if not flower_draw then
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	end
+end
+
 -->8
 --jimbob--
 function lab_room_init()
@@ -941,17 +947,19 @@ function puzzle_select()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			if(d == true) then
-				show_dialog({"The flowers are\nblooming."}, 55, 107)
-			elseif(d == false) then
+			if(flowers_solved == true) then
+				show_dialog({"The flowers are blooming."}, 55, 110)
+			elseif not flowers_solved and curr_key_item != 153 then
 				show_dialog({"There's a vase of\nflowers on the\ntable.", "They look like\nthey could use\nsome water."},55,107)
-			end
-			if(curr_key_item == 147) then
-				show_dialog({"You poured the\nwater into the\nvase.", "the flowers are\nblooming..!"},55,107)
+			elseif not flowers_solved and curr_key_item == 153 then
+			ctime = time()
+			flower_draw = false
+			flowers_solved = true
+			add(collected_pieces,124)
+			curr_key_item = -1
+			d = true
 			end
 		elseif(stan == 35 or stan == 51) then
-			--show_dialog({"this would be a\n"..
-			--"puzzle"},55,115)
 			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.",
 			"'exp: 438'.", "what could that\nmean..?"}, 55, 110)
 		end
@@ -1032,15 +1040,15 @@ function puzzle_select()
 end
 
 function add_inventory()
-	if state == 1 and d == false then
-		if (tile_facing() >= 6 and tile_facing() <= 8) or (tile_facing() >= 22 and tile_facing() <= 24) then
-			main_room_update()
-			add(collected_pieces,124)
-			--curr_key_item = -1
-			d = true
-			sfx(1)
-		end
-	elseif state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken and curr_key_item==-1 then
+	--might have been something left over from my mistake merge
+	--if state == 1 and d == false then
+		--if ((tile_facing() >= 6 and tile_facing() <= 8) or (tile_facing() >= 22 and tile_facing() <= 24)) and curr_key_item == 149 then
+			--add(collected_pieces,124)
+		--	curr_key_item = -1
+		--	d = true
+		--	sfx(1)
+		--end
+	if state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken and curr_key_item==-1 then
 			curr_key_item=149
 			jug_taken=true
 	elseif state == 4 and explo and not j then
@@ -1435,3 +1443,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
