@@ -231,6 +231,7 @@ function lab_room_init()
 	chem_mix={}
 	chem_anim=0 --for animating chemical puzzle
 	sel_color=0 --selected color for animating
+	chem_puzzle_intro=false
 end
 
 function lab_room_draw()
@@ -1007,50 +1008,59 @@ function puzzle_select()
 				curr_key_item = -1
 				d = true
 			elseif not flowers_solved and curr_key_item == 212 then
-				show_dialog({"the bucket is heavy","you spill the soapy\nmop water\neverywhere...","except in the vase"},52,110)
+				show_dialog({"the bucket is heavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
 				curr_key_item = -1
 			elseif not flowers_solved and curr_key_item!= 149 then
 				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
 			end
 		elseif(stan == 35 or stan == 51) then
-			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.",
+			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.\n",
 			"'exp: 438'.", "what could that\nmean..?"}, 55, 110)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
-			state = 8
+			if not chem_puzzle_intro then
+				show_dialog({"there are some\nchemicals on the\ntable.","there is also\nan empty beaker\nlabeled 'FRIEND'"},55,107)
+				chem_puzzle_intro=true
+			elseif curr_key_item~=-1 then
+				show_dialog({"my hands are too\nfull"},55,110)
+			elseif explo then
+				show_dialog({"you have already\nsolved this puzzle\n"},55,110)
+			else
+				state=8
+			end
 		end
 		if til >= 84 and til <= 86 then
 			show_dialog({"there's something\nwritten on the\nchalkboard",
-			"\"i have crafted an\nexplosive chemical\nlike no other!\"",
-			"\"it explodes when\nexposed to just\na litle heat!\"",
-			"\"it's definitely\nnot dark purple!\"\n",
-			"\"i've decided to\ncall it 'friend.'\"\n",
-			"\"i'm the only one\nthat knows how to\nmake friend!\""},55,107)
+			small_font("\"i have crafted an\nexplosive chemical\nlike no other!\""),
+			small_font("\"it explodes when\nexposed to just\na litle heat!\""),
+			small_font("\"it's definitely\nnot dark purple!\"\n"),
+			small_font("\"i've decided to\ncall it 'friend.'\"\n"),
+			small_font("\"i'm the only one\nthat knows how to\nmake friend!\"")},55,107)
 		--chalkboard
 		end
 		if til==64 or til==65 then
 		--dark blue
-			show_dialog({"there are beakers\nlabeled 'freedom'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'FREEDOM'\non the table"},55,107)
 		end
 		if til==80 or til==81 then
-			show_dialog({"there are beakers\nlabeled 'renegade'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'RENEGADE'\non the table"},55,107)
 		--red
 		end
 		if til==66 or til==67 then
-			show_dialog({"there are flasks\nlabeled 'illusion'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'ILLUSION'\non the table"},55,107)
 		--green
 		end
 		if til==82 or til==83 then
-			show_dialog({"there are flasks\nlabeled 'entropy'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'ENTROPY'\non the table"},55,107)
 		--light blue
 		end
 		if til==96 or til==97 then
-			show_dialog({"there are beakers\nlabeled 'nature'\non the table"},55,107)
+			show_dialog({"there are beakers\nlabeled 'NATURE'\non the table"},55,107)
 		--indigo
 		end
 		if til==98 or til==99 then
-			show_dialog({"there are flasks\nlabeled 'death'\non the table"},55,107)
+			show_dialog({"there are flasks\nlabeled 'DEATH'\non the table"},55,107)
 		--yellow
 		end
 	elseif state == 3 then
@@ -1089,21 +1099,31 @@ function puzzle_select()
 				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},55,110)
 				curr_key_item=-1
 			else
-				show_dialog({"the stove has\na strong fire","if must be used to\nwarm the castle"},55,110)
+				show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 			end
 		end
 	end
 end
 
 function add_inventory()
-	if state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken and curr_key_item==-1 then
+	if state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken then
+		if curr_key_item~=-1 then
+			show_dialog({"my hands are too\nfull to carry this\n"},55,110)
+		else
+			show_dialog({"you received\nWATER JUG"},55,110)
 			curr_key_item=149
 			jug_taken=true
+		end
 	elseif state == 4  then
-		if tile_facing() == 254 and curr_key_item == -1 then
-			curr_key_item =212
-			bucket_taken = true
-			mechroom[8][1] = 208					
+		if tile_facing() == 254 and not bucket_taken then
+			if curr_key_item~=-1 then
+				show_dialog({"my hands are too\nfull to carry this\n"},55,110)
+			else
+				show_dialog({"you received\nWATER BUCKET"},55,110)
+				curr_key_item =212
+				bucket_taken = true
+				mechroom[8][1] = 208	
+			end
 		elseif explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
 			add(collected_pieces,127)
 			j = true
@@ -1204,7 +1224,7 @@ end
 function lights_dialog()
 	if state == 4 then
 		if tile_facing() == 209 and not puzzle_intro then
-			show_dialog({"it appears to be\nan electrial panel","the wires are\ndisconnected"},55,115)
+			show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},55,105)
 			puzzle_intro = true
 		elseif tile_facing() == 209 and puzzle_intro then
 			state = 7
