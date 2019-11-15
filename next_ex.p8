@@ -24,7 +24,7 @@ function _init()
 
 	state = 6
 	
-	timer_mins = 6
+	timer_mins = 12
 	timer_secs = 0
 	timer_ticks = 0
 
@@ -578,8 +578,8 @@ function laser_draw()
  end
  palt(0,false)
 	palt(14,true)
-	rectfill(0,0,18,8,1)
-	rect(0,0,18,8,0)
+	rectfill(0,0,22,8,1)
+	rect(0,0,22,8,0)
 	spr(sel.color,64-((#laser_puz[1]/2)*8)+flr(8*(sel.x-1)),(8*(sel.y-1)))
 	draw_cons()
 end
@@ -838,8 +838,8 @@ function draw_room(room)
  pal()
  palt(0,false)
 	palt(14,true)
-	rectfill(0,0,18,8,1)
-	rect(0,0,18,8,0)
+	rectfill(0,0,22,8,1)
+	rect(0,0,22,8,0)
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
 end
 
@@ -1156,6 +1156,7 @@ function game_timer()
 	else
 		timer_ticks +=1
 	end
+	
 	
 	if timer_secs <10 then
 	 game_time = timer_mins..":0"..timer_secs
