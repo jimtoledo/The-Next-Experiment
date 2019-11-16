@@ -55,6 +55,8 @@ function _init()
 	mainroom_init()
 	
 	explo = false
+	
+	dropped_items={}
 end
 
 function _update()
@@ -100,6 +102,11 @@ function _update()
 			end
 		end
 	end
+	if btnp(4)and not p_moving then
+		if curr_key_item!=-1 then
+			drop_item()
+		end
+	end
 	if(dialog_state>0) dialog_update()
 	exp_update()
 	flowers_update()
@@ -142,6 +149,7 @@ function _draw()
 	exp_draw()
 	draw_flowers()
 	arrow_check()
+	print(dropped_items[1],0,10,7)
 end
 -->8
 --destiny--
@@ -828,7 +836,12 @@ function draw_room(room)
 			pal()
 			palt(0,false)
 			palt(14,true)
-		end		
+		end
+			if state == 4 and i<3 and not lights then
+				if j<5 then
+					pal(5,5)
+				end
+			end		
 			spr(room[i][j],x,y)
  		x+= 8
  	end
@@ -840,6 +853,13 @@ function draw_room(room)
 	palt(14,true)
 	rectfill(0,0,18,8,1)
 	rect(0,0,18,8,0)
+ if dropped_items != nil then
+ 	for i=1,#dropped_items do
+ 		if dropped_items[i][1] == state then
+ 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))-4)
+ 		end
+ 	end
+ end
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
 end
 
@@ -1265,6 +1285,33 @@ function arrow_check()
 				spr(52,20,56,1,1,true,false)
 		end
 	end
+end
+
+function drop_item()
+	local item ={}
+	if state == 1 then
+		add(item,1)
+	elseif state == 2 then
+		add(item,2)
+	elseif state == 3 then
+		add(item,3)
+	elseif state == 4 then
+		add(item,4)
+	end
+	
+	add(item,p_x)
+	add(item,p_y)
+	add(item,curr_key_item)
+	
+	curr_key_item =-1
+	
+	add(dropped_items,item)
+
+end
+
+function pick_up()
+	--if in correct position subtract the itm from
+	--dropped_items and change keyitem to that.
 end
 		
 -->8
