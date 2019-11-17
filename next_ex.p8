@@ -868,7 +868,7 @@ function draw_room(room)
  if dropped_items != nil then
  	for i=1,#dropped_items do
  		if dropped_items[i][1] == state then
- 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))+4)
+ 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))-4)
  		end
  	end
  end
