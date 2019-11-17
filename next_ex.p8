@@ -56,7 +56,8 @@ function _init()
 	
 	explo = false
 	
-	dropped_items={}
+	dropped_items={
+	{4,1,8,212}}
 end
 
 function _update()
@@ -98,9 +99,6 @@ function _update()
 		if btnp(5)and not p_moving then 
 			if not lights  and controls then
 				lights_dialog()
-				if tile_facing() == 209 and puzzle_intro then
-					state = 7
-				end
 			else
 				add_inventory() 
 				puzzle_select()
@@ -514,7 +512,6 @@ function mech_room_init()
 	add(exp,{x=0,y=0,dx=0,dy=0,r=0,m=0,a=false})
 	end
 	
-	bucket_taken = false
 	puzzle_win= false
 	d_done =false
 	mechroom = {
@@ -560,22 +557,7 @@ end
 function mech_room_draw()
 	cls()
 	draw_room(mechroom)
-	if not bucket_taken then
-		if lights then
-				spr(212,64-((#mechroom[1]/2)*8),56)
-		else
-			for i=2,15 do
-				pal(i,1)
-			end
-			pal(1,0)
-			pal(5,0)
-			pal(2,0)
-			spr(212,64-((#mechroom[1]/2)*8),56)
-			pal()
-			palt(0,false)
-			palt(14,true)	
-		end
-	end
+	
 	if (explo and not j) spr(127,(64-((#mechroom[1]/2)*8)+36),4)
 end
 
@@ -883,18 +865,18 @@ function draw_room(room)
  	x =64-((#room[1]/2)*8)
  	y+= 8
  end
+ if dropped_items != nil then
+ 	for i=1,#dropped_items do
+ 		if dropped_items[i][1] == state then
+ 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))+4)
+ 		end
+ 	end
+ end
  pal()
  palt(0,false)
 	palt(14,true)
 	rectfill(0,0,22,8,1)
 	rect(0,0,22,8,0)
- if dropped_items != nil then
- 	for i=1,#dropped_items do
- 		if dropped_items[i][1] == state then
- 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))-4)
- 		end
- 	end
- end
 
 
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
@@ -1173,16 +1155,8 @@ function add_inventory()
 			jug_taken=true
 		end
 	elseif state == 4  then
-		if tile_facing() == 254 and not bucket_taken then
-			if curr_key_item~=-1 then
-				show_dialog({"my hands are too\nfull to carry this\n"},55,110)
-			else
-				show_dialog({"you received\nWATER BUCKET"},55,110)
-				curr_key_item =212
-				bucket_taken = true
-				mechroom[8][1] = 208	
-			end
-		elseif explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
+		
+		if explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
 			add(collected_pieces,127)
 			j = true
 			sfx(1)
@@ -1365,7 +1339,7 @@ function pick_up()
 		room = labroom
 		add(item,2)
 	elseif state == 3 then
-	 room = serveroom
+	 room = servroom
 		add(item,3)
 	elseif state == 4 then
 	 room= mechroom
