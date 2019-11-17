@@ -55,6 +55,8 @@ function _init()
 	mainroom_init()
 	
 	explo = false
+	
+	dropped_items={}
 end
 
 function _update()
@@ -96,8 +98,14 @@ function _update()
 			else
 				add_inventory() 
 				puzzle_select()
+				pick_up()
 				win_check()
 			end
+		end
+	end
+	if btnp(4)and not p_moving then
+		if curr_key_item!=-1 then
+			drop_item()
 		end
 	end
 	if(dialog_state>0) dialog_update()
@@ -129,7 +137,7 @@ function _draw()
 	if state < 5 or state>=7 then
 		if state < 5 then
 			inv_display()
-			if(not controls) print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
+			if(not controls) print("⬅️⬇️⬆️➡️:move\n❎:interact\nz:drop item",75,108,7)
 			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
@@ -828,7 +836,12 @@ function draw_room(room)
 			pal()
 			palt(0,false)
 			palt(14,true)
-		end		
+		end
+			if state == 4 and i<3 and not lights then
+				if j<5 then
+					pal(5,5)
+				end
+			end		
 			spr(room[i][j],x,y)
  		x+= 8
  	end
@@ -840,6 +853,15 @@ function draw_room(room)
 	palt(14,true)
 	rectfill(0,0,22,8,1)
 	rect(0,0,22,8,0)
+ if dropped_items != nil then
+ 	for i=1,#dropped_items do
+ 		if dropped_items[i][1] == state then
+ 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))-4)
+ 		end
+ 	end
+ end
+
+
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
 end
 
@@ -1267,7 +1289,102 @@ function arrow_check()
 		end
 	end
 end
+
+function drop_item()
+	local item ={}
+	local room
+	local playery,playerx=player_facing()
+	if playerx !=-1 then
+		if tile_facing() == 19 or tile_facing()==147 or tile_facing()== 208 then
+			if state == 1 then
+				room = mainroom
+				add(item,1)
+			elseif state == 2 then
+				room = labroom
+				add(item,2)
+			elseif state == 3 then
+			 room = serveroom
+				add(item,3)
+			elseif state == 4 then
+			 room= mechroom
+				add(item,4)
+			end
+	
 		
+			add(item,playerx)
+			add(item,playery)
+			add(item,curr_key_item)
+			
+			room[playery][playerx] =254
+			curr_key_item =-1
+			
+			add(dropped_items,item)
+		end
+	end
+end
+
+function pick_up()
+	local playery,playerx=player_facing()
+	if state == 1 then
+		room = mainroom
+		add(item,1)
+	elseif state == 2 then
+		room = labroom
+		add(item,2)
+	elseif state == 3 then
+	 room = serveroom
+		add(item,3)
+	elseif state == 4 then
+	 room= mechroom
+		add(item,4)
+	end
+	for i=1,#dropped_items do
+		if dropped_items[i][1]==state then
+			if playerx == dropped_items[i][2] then
+				if playery ==dropped_items[i][3] then
+					if curr_key_item == -1 then
+						curr_key_item = dropped_items[i][4]
+						room[playery][playerx] =208
+						del(dropped_items,dropped_items[i])
+						return
+					end
+				end
+			end
+		end
+	end	 
+end
+--add it so it is a tile facing to put down and pick up		
+
+function player_facing()
+	local room
+
+	if state == 1 then
+		room = mainroom
+	elseif(state==2) then
+	 room=labroom
+	elseif state == 4 then
+		room=mechroom
+	elseif state ==3 then
+		room= servroom
+	elseif state >= 5 then
+		return -1
+	end
+	local p_x = flr(p_x+0.5)
+	local p_y = flr(p_y+0.5)
+	if p_dir==76 then
+		if(p_y+1>#room) return -1,-1
+		return p_y+1,p_x
+	elseif p_dir==77 then
+		if(p_y-1<1) return -1,-1
+		return p_y-1,p_x
+	elseif p_dir==78 then
+		if(p_x-1<1) return -1,-1
+		return p_y,p_x-1
+	elseif p_dir==79 then
+		if(p_x+1>#room[1]) return -1,-1
+		return p_y,p_x+1
+	end
+end
 -->8
 --intro/outtro code--
 function intro_draw()
