@@ -1303,7 +1303,7 @@ function drop_item()
 				room = labroom
 				add(item,2)
 			elseif state == 3 then
-			 room = serveroom
+			 room = servroom
 				add(item,3)
 			elseif state == 4 then
 			 room= mechroom
