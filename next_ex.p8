@@ -544,6 +544,17 @@ function mech_room_init()
 	{200,216,230,219,214,200,178},
 	{198,214,235,231,230,198,178},
 	{176,177,177,177,177,177,182}}
+
+	laser_reset = {
+	{208,208,208,208,208,208,208},
+	{176,208,208,208,208,208,208},
+	{208,208,246,208,208,208,208},
+	{208,208,208,208,246,208,208},
+	{208,208,230,208,214,208,208},
+	{198,214,208,208,230,198,208},
+	{176,208,208,208,208,208,208}}
+	
+
 end
 	
 function mech_room_draw()
@@ -669,6 +680,9 @@ function laser_con()
 	if btnp(4) then
 		state = 4
 	end
+	if btnp(0,1) then
+		puz_reset()
+	end
 	if btnp(5) then
 		if sel.color != 213 then
 			sel.color = 213
@@ -779,6 +793,18 @@ function puz_win()
  	return true
  else
  	return false
+ end
+end
+
+function puz_reset()
+	x =64-((#laser_puz[1]/2)*8)
+ y = 0
+ for i=1,#laser_puz do
+ 	for j=1,#laser_puz[1] do	
+			laser_puz[i][j] = laser_reset[i][j]
+ 	end
+ 	x =64-((#laser_puz[1]/2)*8)
+ 	y+= 8
  end
 end
 
