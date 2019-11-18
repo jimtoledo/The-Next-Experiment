@@ -24,7 +24,7 @@ function _init()
 
 	state = 6
 	
-	timer_mins = 12
+	timer_mins = 6
 	timer_secs = 0
 	timer_ticks = 0
 
@@ -55,6 +55,13 @@ function _init()
 	mainroom_init()
 	
 	explo = false
+	
+	room_set =true
+	slidex =0
+	slidey=0
+	xmove=0
+	ymove=127
+	move_delay =1
 end
 
 function _update()
@@ -87,7 +94,7 @@ function _update()
 	end
 	
 	if(state < 5 and dialog_state==0) then
-		if controls then
+		if controls and room_set then
 		 player_move()
 		end
 		if btnp(5)and not p_moving then 
@@ -141,7 +148,6 @@ function _draw()
 	end
 	exp_draw()
 	draw_flowers()
-	arrow_check()
 end
 -->8
 --destiny--
@@ -185,7 +191,14 @@ function main_room_draw()
 		pal(5,0)
 		pal(2,0)
 	end
-	spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	if slidex!=0 then
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1))+xmove,flr(8*(8-1)))
+	elseif slidey!=0 then
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1))+ymove)
+	else
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	end
+	
 	pal()
 	palt(0,false)
 	palt(14,true)
@@ -396,7 +409,11 @@ function serv_room_draw()
 	draw_room(servroom)
 	if(not jug_taken) then 
 		if lights then
-			spr(149,52,40)
+			if slidex!=0 then
+				spr(149,xmove,40)
+			else
+				spr(149,52,40)
+			end
 		else
 			for i=2,15 do
 				pal(i,1)
@@ -404,7 +421,11 @@ function serv_room_draw()
 			pal(1,0)
 			pal(5,0)
 			pal(2,0)
-			spr(149,52,40)
+			if slidex!=0 then
+				spr(149,xmove,40)
+			else
+				spr(149,52,40)
+			end
 			pal()
 			palt(0,false)
 			palt(14,true)	
@@ -542,7 +563,11 @@ function mech_room_draw()
 	draw_room(mechroom)
 	if not bucket_taken then
 		if lights then
+			if slidex!=0 then
+				spr(212,xmove,56)
+			else
 				spr(212,64-((#mechroom[1]/2)*8),56)
+			end
 		else
 			for i=2,15 do
 				pal(i,1)
@@ -550,7 +575,12 @@ function mech_room_draw()
 			pal(1,0)
 			pal(5,0)
 			pal(2,0)
-			spr(212,64-((#mechroom[1]/2)*8),56)
+			
+			if slidex!=0 then
+				spr(212,xmove,56)
+			else
+				spr(212,64-((#mechroom[1]/2)*8),56)
+			end
 			pal()
 			palt(0,false)
 			palt(14,true)	
@@ -578,8 +608,8 @@ function laser_draw()
  end
  palt(0,false)
 	palt(14,true)
-	rectfill(0,0,22,8,1)
-	rect(0,0,22,8,0)
+	rectfill(0,0,18,8,1)
+	rect(0,0,18,8,0)
 	spr(sel.color,64-((#laser_puz[1]/2)*8)+flr(8*(sel.x-1)),(8*(sel.y-1)))
 	draw_cons()
 end
@@ -803,8 +833,46 @@ end
 --other stuff--
 --generic draw room function that displays 2-d array of sprites
 function draw_room(room)
- x =64-((#room[1]/2)*8)
- y = 0
+ local middlex =64-((#room[1]/2)*8)
+ local topy= 0
+	if move_delay <=0 then
+		xmove += slidex
+		ymove += slidey
+		move_delay = 1
+	else
+		move_delay-= 1
+	end
+ if (xmove >= middlex and slidex>0) then
+ 	slidex = 0
+ 	room_set = true
+ 	xmove=0
+ elseif (xmove <= middlex and slidex<0) then	
+ 	slidex = 0
+ 	room_set = true
+ 	xmove=0
+ end
+ if (ymove <= topy and slidey<0) then
+ 	slidey = 0
+ 	room_set = true
+ 	ymove =127
+ elseif (ymove >= topy and slidey>0) then
+ 	slidey = 0
+ 	room_set = true
+ 	ymove =127
+ end
+ 
+ if room_set then
+ 	x=middlex
+ 	y=topy
+ else
+ 	if slidex != 0 then
+ 		x = xmove
+ 		y = topy
+ 	else
+ 		x= middlex
+ 		y = ymove
+ 	end
+ end
  for i=1,#room do
  	for j=1,#room[1] do
  	if not lights and state<5 then
@@ -830,17 +898,23 @@ function draw_room(room)
 			palt(14,true)
 		end		
 			spr(room[i][j],x,y)
- 		x+= 8
+		 x+=8
  	end
- 	x =64-((#room[1]/2)*8)
- 	y+= 8
+	 if room_set or slidex==0 then
+	 	x=middlex
+	 	y+=8
+	 else
+	 	x =xmove
+	 	y+=8
+	 end
  end
  pal()
  palt(0,false)
 	palt(14,true)
-	rectfill(0,0,22,8,1)
-	rect(0,0,22,8,0)
+	rectfill(0,0,18,8,1)
+	rect(0,0,18,8,0)
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
+
 end
 
 --returns sprite number of tile player is facing, if player is facing boundary, return -1
@@ -958,23 +1032,33 @@ function door_check()
 		if state== 1 then
 			if	t == 101 then
 				state = 3
+				room_set = false
+				room_slide("mainroom","serveroom")
 				p_x=1
 				p_y=8
 			elseif t == 102 then
 				state = 4
-				p_x=5
+				room_set = false
+				room_slide("mainroom","mechroom")
+				p_x=6
 				p_y=5
 			elseif t == 33 and lights then
 				state = 2
+				room_set = false
+				room_slide("mainroom","labroom")
 				p_x=4
 				p_y=2
 			elseif t == 34 and lights then
 				state = 2
+				room_set = false
+				room_slide("mainroom","labroom")
 				p_x=5
 				p_y=2
 			end								
 		elseif state==2 then
 			state = 1
+			room_set = false
+			room_slide("labroom","mainroom")
 			p_y=15
 			if t == 87 then
 				p_x=8
@@ -983,10 +1067,14 @@ function door_check()
 			end
 		elseif state==4 then
 			state=1
+			room_set = false
+			room_slide("mechroom","mainroom")
 			p_x=1
 			p_y=7
 		elseif state==3 then
 			state=1
+			room_set = false
+			room_slide("serveroom","mainroom")
 			p_x=16
 			p_y=7
 		end
@@ -1009,7 +1097,7 @@ function puzzle_select()
 				curr_key_item = -1
 				d = true
 			elseif not flowers_solved and curr_key_item == 212 then
-				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
+				show_dialog({"the bucket is heavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
 				curr_key_item = -1
 			elseif not flowers_solved and curr_key_item!= 149 then
 				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
@@ -1157,7 +1245,6 @@ function game_timer()
 		timer_ticks +=1
 	end
 	
-	
 	if timer_secs <10 then
 	 game_time = timer_mins..":0"..timer_secs
 	else
@@ -1230,8 +1317,6 @@ function lights_dialog()
 			puzzle_intro = true
 		elseif tile_facing() == 209 and puzzle_intro then
 			state = 7
-		elseif tile_facing() == 210 or tile_facing()==211 then
-			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 		else
 			show_dialog({"it is too dark\nto see anything"},55,115)
 		end	
@@ -1241,30 +1326,50 @@ function lights_dialog()
 end
 
 
-function arrow_check()
-	local f = tile_facing()
-	if (f>=101 and f<=103) or f == 33 or f == 34 or f == 87 or f == 88 then
-		if state== 1 then
-			if	f== 101 then
-				spr(52,120,48)
-			elseif f== 102 then
-				spr(52,0,48,1,1,true,false)
-			elseif f== 33 and lights then
-				spr(53,56,111)
-			elseif f== 34 and lights then
-				spr(53,64,111)
-			end								
-		elseif state==2 then
-			if f == 87 then
-				spr(53,39,2,1,1,false,true)
-			elseif f == 88 then
-				spr(53,48,2,1,1,false,true)
-			end
-		elseif state==4 then
-				spr(52,80,32)
-		elseif state==3 then
-				spr(52,20,56,1,1,true,false)
+function room_slide(rooma,roomb)
+	local a = rooma
+	local b	= roomb
+	local slide 
+	
+	if a == "mainroom" then
+		if b == "mechroom" then
+			slide = "right" 
+			xmove=0
+		elseif b == "serveroom" then
+			slide = "left" 
+			xmove=127
+		elseif b == "labroom" then
+			slide = "up" 
+			ymove=127
 		end
+	elseif a=="labroom" then
+			slide = "down" 
+			ymove=-127
+	elseif a=="mechroom" then
+			slide = "left" 
+			xmove=127
+	elseif a=="serveroom" then
+			slide = "right" 
+			xmove=-127
+	end
+	
+	if not room_set then
+		if slide=="right" then
+			slidex=8
+			slidey=0
+		elseif slide=="left" then
+			slidex= -8
+			slidey=0
+		elseif slide=="up" then
+			slidey= -8
+			slidex=0
+		elseif slide=="down" then
+			slidey=8
+			slidex=0
+		end
+	else
+		slidex=0
+		slidey=0
 	end
 end
 		
@@ -1422,14 +1527,14 @@ __gfx__
 000000000011111111111100475555552452254444522542ee3666eeeecccceeeeccccee00000000000000000000000000000000000000000000000000000000
 000000000055555555555500465555552444444444444442ee7666eeee7ccceeee7cccee00000000000000000000000000000000000000000000000000000000
 0000000000555555555555004655555522222222222222228eeddee88eeddee88eeddee800000000000000000000000000000000000000000000000000000000
-00000000000000000000000047555555eeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010111111111101047555555eeee86eeeeeeeeee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010555555555501046555555ee88886eeee888ee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010000000000001046555555ee888886eee888ee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010011111111001045555555ee88886eee88888e00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000001011111111010055555555eeee86eeee68886e00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000000000000055555555eeeeeeeeeee686ee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000000000000055555555eeeeeeeeeeee6eee00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000047555555eeeeeeee0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000010111111111101047555555eeee87ee0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000010555555555501046555555ee88887e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000010000000000001046555555ee8888870000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000010011111111001045555555ee88887e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000001011111111010055555555eeee87ee0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000055555555eeeeeeee0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000055555555eeeeeeee0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 5555555555555555555555555555555599999999999999999999999900000000000000001177eeee1177eeee1177eeeeee4444eeee4444eee44444eeee44444e
 5557775555777555555575555557555599999999999999999999999900000000000000001177eeee11771eee11771eeee444444ee444444ee444444ee444444e
 5557775555777555555575555557555599000000000000000000009900000000000000001177eeee1177eeee1177e1eee4ffff4ee4ffff4eeffff44ee44ffffe
@@ -1486,14 +1591,14 @@ __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000eeccccee
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ecccccce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ecffffce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ec0ff0ce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ecffffce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ef7887fe
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ef7887fe
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ee5ee5ee
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 1dd1dd1d1dd1dd1dd1552d2dd2dd201155555555555555555533335555555555555335555555555555555555555335555553355533333333d1dd1d1dd1dd1d1d
 111111111111111111552222222200005555555555535555533333355555555555533555555555555555555555533555555335553eeeeee31111111111111111
 d1dd1dd1d1dd1dd1dd55d2d2dd21101055555b555555355b333333335555555555533555555555555555555555533555555335553eeeeee3dd1dd1d1dd1dd1d1
