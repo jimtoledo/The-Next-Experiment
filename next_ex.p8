@@ -68,7 +68,7 @@ function _update()
 	end
 	
 	if dialog_state==0 then
-		if d_done and not puzzle_win then
+		if d_done and not puzzle_win and not ex then
 			state=7
 		end
 		if state == 7 then
@@ -512,8 +512,10 @@ function mech_room_init()
 	add(exp,{x=0,y=0,dx=0,dy=0,r=0,m=0,a=false})
 	end
 	
+	
 	puzzle_win= false
 	d_done =false
+	ex = false
 	mechroom = {
 	{192,192,193,192,194,195},
 	{192,192,209,192,210,211},
@@ -661,6 +663,7 @@ function laser_con()
 	end
 	if btnp(4) then
 		state = 4
+		ex=true
 	end
 	if btnp(0,1) then
 		puz_reset()
@@ -868,7 +871,7 @@ function draw_room(room)
  if dropped_items != nil then
  	for i=1,#dropped_items do
  		if dropped_items[i][1] == state then
- 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1))-4)
+ 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1)))
  		end
  	end
  end
@@ -1257,8 +1260,12 @@ end
 function lights_dialog()
 	if state == 4 then
 		if tile_facing() == 209 and not puzzle_intro then
-			show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},55,105)
-			d_done = true
+			if not d_done then
+				show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},55,105)
+				d_done = true
+			else
+				state = 7
+			end
 		elseif tile_facing() == 210 or tile_facing()==211 then
 			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 		else
