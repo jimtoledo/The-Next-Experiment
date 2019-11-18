@@ -1224,6 +1224,9 @@ function dialog_update()
 			dialog_state+=1
 			dialog_curr_char=1
 		else
+			if tile_facing() >= 112 and tile_facing() <= 117 and dialog_state==2 then
+				state=8
+			end
 			dialog_state=0
 		end
 	end
