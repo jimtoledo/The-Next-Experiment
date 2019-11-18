@@ -1004,7 +1004,7 @@ function door_check()
 				p_y=8
 			elseif t == 102 then
 				state = 4
-				p_x=5
+				p_x=6
 				p_y=5
 			elseif t == 33 and lights then
 				state = 2
@@ -1068,7 +1068,7 @@ function puzzle_select()
 			elseif curr_key_item~=-1 then
 				show_dialog({"my hands are too\nfull"},55,110)
 			elseif explo then
-				show_dialog({"you have already\nsolved this puzzle\n"},55,110)
+				show_dialog({"there are no\nempty beakers left"},55,110)
 			else
 				state=8
 			end
@@ -1112,7 +1112,7 @@ function puzzle_select()
 				show_dialog({"it is too dark\nto see anything"},55,110)
 			else
 				if c then
-					show_dialog({"you have already\nsolved this puzzle\n"},55,110)
+					show_dialog({"the pad lock\nis open"},55,110)
 				else
 					state = 9
 				end
@@ -1399,14 +1399,48 @@ function player_facing()
 		return p_y,p_x+1
 	end
 end
+
+function large_print(t,x,y,c)
+local f,a=0
+  if (t==nil) print("")return
+  if (c==nil) c=peek(24357)
+  if (x==nil) x=peek(24358)
+  if (y==nil) y=peek(24359)
+  for i=1,#t do
+    a=sub(t,i,i)
+    if a=="@" then
+      f=1-f
+    else
+      print(a,x,y,c)
+      if f==1 then
+        for j=0,4 do
+          for k=0,2 do
+            sset(k,j,pget(x+k,y+j))
+          end
+        end
+        rectfill(x,y,x+2,y+4,0)
+        color(c)
+        sspr(0,0,3,5,x,y,6,5)
+        x+=3
+      end
+      x+=4
+    end
+  end
+  if (y>=116) print("") y=116
+  poke(24359,y+6)
+  poke(24358,0)
+  reload(0,0,320)
+end
+
 -->8
 --intro/outtro code--
 function intro_draw()
 	cls()
-	print("the next experiment",hcenter("the next experiment"),10,8)
-	print("you have been taken and are now ",hcenter("you have been taken and are now"),30,6)
-	print("trapped inside a dark castle",hcenter("trapped	inside a dark castle"),40,6)
-	print("figure out how to escape",hcenter("figure out how to escape"),50,6)
+	large_print("@the next",37,10,8)
+	large_print("@experiment",32,20,8)
+	print("you have been taken and are now ",hcenter("you have been taken and are now"),40,6)
+	print("trapped inside a dark castle",hcenter("trapped	inside a dark castle"),50,6)
+	print("figure out how to escape",hcenter("figure out how to escape"),60,6)
 	print("press ❎ to begin",hcenter("press ❎ to begin"),100,6)
 	pal(5,0)
 	pal(0,5)
