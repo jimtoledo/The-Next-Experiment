@@ -55,6 +55,9 @@ function _init()
 	mainroom_init()
 	
 	explo = false
+	
+	dropped_items={
+	{4,1,8,212}}
 end
 
 function _update()
@@ -65,6 +68,9 @@ function _update()
 	end
 	
 	if dialog_state==0 then
+		if d_done and not puzzle_win and not ex then
+			state=7
+		end
 		if state == 7 then
 			laser_con()
 		elseif state == 8 then
@@ -96,11 +102,18 @@ function _update()
 			else
 				add_inventory() 
 				puzzle_select()
+				pick_up()
 				win_check()
 			end
 		end
 	end
+	if btnp(4)and not p_moving then
+		if curr_key_item!=-1 then
+			drop_item()
+		end
+	end
 	if(dialog_state>0) dialog_update()
+
 	exp_update()
 	flowers_update()
 end
@@ -129,7 +142,7 @@ function _draw()
 	if state < 5 or state>=7 then
 		if state < 5 then
 			inv_display()
-			if(not controls) print("⬅️⬇️⬆️➡️:move\n❎:interact",75,112,7)
+			if(not controls) print("⬅️⬇️⬆️➡️:move\n❎:interact\nz:drop item",75,108,7)
 			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
@@ -490,8 +503,8 @@ end
 function mech_room_init()
 	sel = {}
 	sel.color = 213
-	sel.x = 3
-	sel.y = 5
+	sel.x = 1
+	sel.y = 1
 	sel.dir = "none"
 	
 	exp= {}
@@ -499,9 +512,10 @@ function mech_room_init()
 	add(exp,{x=0,y=0,dx=0,dy=0,r=0,m=0,a=false})
 	end
 	
-	bucket_taken = false
-	puzzle_intro = false
 	
+	puzzle_win= false
+	d_done =false
+	ex = false
 	mechroom = {
 	{192,192,193,192,194,195},
 	{192,192,209,192,210,211},
@@ -513,49 +527,39 @@ function mech_room_init()
 	{254,208,208,208,196,197}}
 	
 	laser_puz = {
-	{208,208,208,208,208},
-	{208,230,208,208,208},
-	{208,208,208,208,208},
-	{208,208,208,208,208},
-	{208,208,208,208,208},
-	{208,208,208,198,208},
-	{208,208,208,208,208},
-	{208,208,198,208,246},
-	{208,208,214,208,208},
-	{214,230,246,208,208}}
+	{208,208,208,208,208,208,208},
+	{176,208,208,208,208,208,208},
+	{208,208,246,208,208,208,208},
+	{208,208,208,208,246,208,208},
+	{208,208,230,208,214,208,208},
+	{198,214,208,208,230,198,208},
+	{176,208,208,208,208,208,208}}
 	
 	puz_ans = {
-	{218,215,215,215,217},
-	{216,230,202,201,216},
-	{216,232,200,200,216},
-	{216,232,200,200,216},
-	{216,232,200,200,216},
-	{216,232,200,198,216},
-	{216,232,200,218,220},
-	{216,232,198,216,246},
-	{216,232,214,220,248},
-	{214,230,246,247,252}}
+	{180,177,177,177,177,177,179},
+	{176,202,199,199,199,201,178},
+	{202,204,246,247,249,200,178},
+	{200,218,215,217,246,200,178},
+	{200,216,230,219,214,200,178},
+	{198,214,235,231,230,198,178},
+	{176,177,177,177,177,177,182}}
+
+	laser_reset = {
+	{208,208,208,208,208,208,208},
+	{176,208,208,208,208,208,208},
+	{208,208,246,208,208,208,208},
+	{208,208,208,208,246,208,208},
+	{208,208,230,208,214,208,208},
+	{198,214,208,208,230,198,208},
+	{176,208,208,208,208,208,208}}
+	
+
 end
 	
 function mech_room_draw()
 	cls()
 	draw_room(mechroom)
-	if not bucket_taken then
-		if lights then
-				spr(212,64-((#mechroom[1]/2)*8),56)
-		else
-			for i=2,15 do
-				pal(i,1)
-			end
-			pal(1,0)
-			pal(5,0)
-			pal(2,0)
-			spr(212,64-((#mechroom[1]/2)*8),56)
-			pal()
-			palt(0,false)
-			palt(14,true)	
-		end
-	end
+	
 	if (explo and not j) spr(127,(64-((#mechroom[1]/2)*8)+36),4)
 end
 
@@ -585,13 +589,14 @@ function laser_draw()
 end
 
 function draw_cons()
-	rect(2,85,127,127,7)
+	rect(2,74,127,127,7)
 	print(
 	"❎: select / deselect\n"..
-	"⬅️⬇️⬆️➡️: move\n\n"..
+	"⬅️⬇️⬆️➡️: move\n"..
+	"s: reset\n\n"..
 	"connect wires ".. 
 	"to restore power\n\n"..
-	"z: exit",4,88,7) 
+	"z: exit",4,78,7) 
 end
 
 function laser_con()
@@ -658,6 +663,10 @@ function laser_con()
 	end
 	if btnp(4) then
 		state = 4
+		ex=true
+	end
+	if btnp(0,1) then
+		puz_reset()
 	end
 	if btnp(5) then
 		if sel.color != 213 then
@@ -678,6 +687,10 @@ function laser_con()
 			if sel.color != 237 then
 				sel.color = 237
 			end
+		elseif laser_puz[sel.y][sel.x]== 176 then
+			if sel.color != 183 then
+				sel.color = 183
+			end
 		end
 	end		 
 end
@@ -697,6 +710,8 @@ function laser_map(d,l)
 		lr = 199
 	elseif sel.color == 253 then
 		lr = 247
+	elseif sel.color == 183 then
+		lr =177
 	end
 	ud = lr+1
 	ld = lr+2
@@ -704,7 +719,7 @@ function laser_map(d,l)
 	ru = lr+4
 	lu = lr+5
 	
-	if l[sel.y][sel.x]!= 214 and l[sel.y][sel.x]!= 198 and l[sel.y][sel.x]!= 246 and  l[sel.y][sel.x]!= 230  then
+	if l[sel.y][sel.x]!= 214 and l[sel.y][sel.x]!= 198 and l[sel.y][sel.x]!= 246 and  l[sel.y][sel.x]!= 230 and l[sel.y][sel.x]!= 176 then
 		if d == "up" then
 			if sel.dir == "left" then
 				l[sel.y][sel.x] = ru
@@ -754,14 +769,27 @@ function puz_win()
  	x =64-((#laser_puz[1]/2)*8)
  	y+= 8
  end
- if num_cor == 50 then
+ if num_cor == #puz_ans*#puz_ans[1] then
  	lights = true
 		add(collected_pieces,125)
 		z= true
 		sfx(1)
+		puzzle_win = true
  	return true
  else
  	return false
+ end
+end
+
+function puz_reset()
+	x =64-((#laser_puz[1]/2)*8)
+ y = 0
+ for i=1,#laser_puz do
+ 	for j=1,#laser_puz[1] do	
+			laser_puz[i][j] = laser_reset[i][j]
+ 	end
+ 	x =64-((#laser_puz[1]/2)*8)
+ 	y+= 8
  end
 end
 
@@ -828,18 +856,32 @@ function draw_room(room)
 			pal()
 			palt(0,false)
 			palt(14,true)
-		end		
+		end
+			if state == 4 and i<3 and not lights then
+				if j<5 then
+					pal(5,5)
+				end
+			end		
 			spr(room[i][j],x,y)
  		x+= 8
  	end
  	x =64-((#room[1]/2)*8)
  	y+= 8
  end
+ if dropped_items != nil then
+ 	for i=1,#dropped_items do
+ 		if dropped_items[i][1] == state then
+ 			spr(dropped_items[i][4],64-((#room[1]/2)*8)+flr(8*(dropped_items[i][2]-1)),flr(8*(dropped_items[i][3]-1)))
+ 		end
+ 	end
+ end
  pal()
  palt(0,false)
 	palt(14,true)
 	rectfill(0,0,22,8,1)
 	rect(0,0,22,8,0)
+
+
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
 end
 
@@ -962,7 +1004,7 @@ function door_check()
 				p_y=8
 			elseif t == 102 then
 				state = 4
-				p_x=5
+				p_x=6
 				p_y=5
 			elseif t == 33 and lights then
 				state = 2
@@ -1026,7 +1068,7 @@ function puzzle_select()
 			elseif curr_key_item~=-1 then
 				show_dialog({"my hands are too\nfull"},55,110)
 			elseif explo then
-				show_dialog({"you have already\nsolved this puzzle\n"},55,110)
+				show_dialog({"there are no\nempty beakers left"},55,110)
 			else
 				state=8
 			end
@@ -1070,7 +1112,7 @@ function puzzle_select()
 				show_dialog({"it is too dark\nto see anything"},55,110)
 			else
 				if c then
-					show_dialog({"you have already\nsolved this puzzle\n"},55,110)
+					show_dialog({"the pad lock\nis open"},55,110)
 				else
 					state = 9
 				end
@@ -1116,16 +1158,8 @@ function add_inventory()
 			jug_taken=true
 		end
 	elseif state == 4  then
-		if tile_facing() == 254 and not bucket_taken then
-			if curr_key_item~=-1 then
-				show_dialog({"my hands are too\nfull to carry this\n"},55,110)
-			else
-				show_dialog({"you received\nWATER BUCKET"},55,110)
-				curr_key_item =212
-				bucket_taken = true
-				mechroom[8][1] = 208	
-			end
-		elseif explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
+		
+		if explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
 			add(collected_pieces,127)
 			j = true
 			sfx(1)
@@ -1226,10 +1260,12 @@ end
 function lights_dialog()
 	if state == 4 then
 		if tile_facing() == 209 and not puzzle_intro then
-			show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},55,105)
-			puzzle_intro = true
-		elseif tile_facing() == 209 and puzzle_intro then
-			state = 7
+			if not d_done then
+				show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},55,105)
+				d_done = true
+			else
+				state = 7
+			end
 		elseif tile_facing() == 210 or tile_facing()==211 then
 			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 		else
@@ -1267,15 +1303,144 @@ function arrow_check()
 		end
 	end
 end
+
+function drop_item()
+	local item ={}
+	local room
+	local playery,playerx=player_facing()
+	if playerx !=-1 then
+		if tile_facing() == 19 or tile_facing()==147 or tile_facing()== 208 then
+			if state == 1 then
+				room = mainroom
+				add(item,1)
+			elseif state == 2 then
+				room = labroom
+				add(item,2)
+			elseif state == 3 then
+			 room = servroom
+				add(item,3)
+			elseif state == 4 then
+			 room= mechroom
+				add(item,4)
+			end
+	
 		
+			add(item,playerx)
+			add(item,playery)
+			add(item,curr_key_item)
+			
+			room[playery][playerx] =254
+			curr_key_item =-1
+			
+			add(dropped_items,item)
+		end
+	end
+end
+
+function pick_up()
+	local playery,playerx=player_facing()
+	if state == 1 then
+		room = mainroom
+		add(item,1)
+	elseif state == 2 then
+		room = labroom
+		add(item,2)
+	elseif state == 3 then
+	 room = servroom
+		add(item,3)
+	elseif state == 4 then
+	 room= mechroom
+		add(item,4)
+	end
+	for i=1,#dropped_items do
+		if dropped_items[i][1]==state then
+			if playerx == dropped_items[i][2] then
+				if playery ==dropped_items[i][3] then
+					if curr_key_item == -1 then
+						curr_key_item = dropped_items[i][4]
+						room[playery][playerx] =208
+						del(dropped_items,dropped_items[i])
+						return
+					end
+				end
+			end
+		end
+	end	 
+end
+--add it so it is a tile facing to put down and pick up		
+
+function player_facing()
+	local room
+
+	if state == 1 then
+		room = mainroom
+	elseif(state==2) then
+	 room=labroom
+	elseif state == 4 then
+		room=mechroom
+	elseif state ==3 then
+		room= servroom
+	elseif state >= 5 then
+		return -1
+	end
+	local p_x = flr(p_x+0.5)
+	local p_y = flr(p_y+0.5)
+	if p_dir==76 then
+		if(p_y+1>#room) return -1,-1
+		return p_y+1,p_x
+	elseif p_dir==77 then
+		if(p_y-1<1) return -1,-1
+		return p_y-1,p_x
+	elseif p_dir==78 then
+		if(p_x-1<1) return -1,-1
+		return p_y,p_x-1
+	elseif p_dir==79 then
+		if(p_x+1>#room[1]) return -1,-1
+		return p_y,p_x+1
+	end
+end
+
+function large_print(t,x,y,c)
+local f,a=0
+  if (t==nil) print("")return
+  if (c==nil) c=peek(24357)
+  if (x==nil) x=peek(24358)
+  if (y==nil) y=peek(24359)
+  for i=1,#t do
+    a=sub(t,i,i)
+    if a=="@" then
+      f=1-f
+    else
+      print(a,x,y,c)
+      if f==1 then
+        for j=0,4 do
+          for k=0,2 do
+            sset(k,j,pget(x+k,y+j))
+          end
+        end
+        rectfill(x,y,x+2,y+4,0)
+        color(c)
+        sspr(0,0,3,5,x,y,6,5)
+        x+=3
+      end
+      x+=4
+    end
+  end
+  if (y>=116) print("") y=116
+  poke(24359,y+6)
+  poke(24358,0)
+  reload(0,0,320)
+end
+
 -->8
 --intro/outtro code--
 function intro_draw()
 	cls()
-	print("the next experiment",hcenter("the next experiment"),10,8)
-	print("you have been taken and are now ",hcenter("you have been taken and are now"),30,6)
-	print("trapped inside a dark castle",hcenter("trapped	inside a dark castle"),40,6)
-	print("figure out how to escape",hcenter("figure out how to escape"),50,6)
+	large_print("@the next",37,10,8)
+	large_print("@experiment",32,20,8)
+	print("you have been taken and are now ",hcenter("you have been taken and are now"),40,6)
+	print("trapped inside a dark castle",hcenter("trapped	inside a dark castle"),50,6)
+	print("figure out how to escape",hcenter("figure out how to escape"),60,6)
 	print("press ❎ to begin",hcenter("press ❎ to begin"),100,6)
 	pal(5,0)
 	pal(0,5)
@@ -1486,14 +1651,14 @@ __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000eeccccee
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ecccccce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ecffffce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ec0ff0ce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ecffffce
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ef7887fe
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ef7887fe
-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ee5ee5ee
+55aaaa5555555555555aa5555555555555555555555aa555555aa555aaaaaaaa00000000000000000000000000000000000000000000000000000000eeccccee
+5aaaaaa555555555555aa5555555555555555555555aa555555aa555aeeeeeea00000000000000000000000000000000000000000000000000000000ecccccce
+aaaaaaaa55555555555aa5555555555555555555555aa555555aa555aeeeeeea00000000000000000000000000000000000000000000000000000000ecffffce
+aaaaaaaaaaaaaaaa555aa555aaaaa555555aaaaa555aaaaaaaaaa555aeeeeeea00000000000000000000000000000000000000000000000000000000ec0ff0ce
+aaaaaaaaaaaaaaaa555aa555aaaaa555555aaaaa555aaaaaaaaaa555aeeeeeea00000000000000000000000000000000000000000000000000000000ecffffce
+aaaaaaaa55555555555aa555555aa555555aa5555555555555555555aeeeeeea00000000000000000000000000000000000000000000000000000000ef7887fe
+5aaaaaa555555555555aa555555aa555555aa5555555555555555555aeeeeeea00000000000000000000000000000000000000000000000000000000ef7887fe
+55aaaa5555555555555aa555555aa555555aa5555555555555555555aaaaaaaa00000000000000000000000000000000000000000000000000000000ee5ee5ee
 1dd1dd1d1dd1dd1dd1552d2dd2dd201155555555555555555533335555555555555335555555555555555555555335555553355533333333d1dd1d1dd1dd1d1d
 111111111111111111552222222200005555555555535555533333355555555555533555555555555555555555533555555335553eeeeee31111111111111111
 d1dd1dd1d1dd1dd1dd55d2d2dd21101055555b555555355b333333335555555555533555555555555555555555533555555335553eeeeee3dd1dd1d1dd1dd1d1
