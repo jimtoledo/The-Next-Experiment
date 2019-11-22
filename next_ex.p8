@@ -424,9 +424,6 @@ function serv_room_draw()
 			palt(14,true)	
 		end
 	end
-	if lock_solve() then
-		servroom[3][3]=156
-	end
 end
 
 
@@ -484,6 +481,7 @@ function lock_con()
 		add(collected_pieces,126)
 		c = true
 		sfx(1)
+		servroom[3][3]=156
 	end
 end
 
@@ -1122,6 +1120,8 @@ function puzzle_select()
 					state = 9
 				end
 			end
+		elseif til==156 then
+			show_dialog({"the chest is\nunlocked"},55,110)
 		end
 	elseif state == 4 then
 		if til == 209 then
