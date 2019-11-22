@@ -1317,7 +1317,7 @@ function drop_item()
 	local room
 	local playery,playerx=player_facing()
 	if playerx !=-1 then
-		if tile_facing() == 19 or tile_facing()==147 or tile_facing()== 208 then
+		if tile_facing() == 19 or tile_facing()== 208 then
 			if state == 1 then
 				room = mainroom
 				add(item,1)
