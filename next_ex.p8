@@ -62,7 +62,7 @@ function _init()
 		{{128}, {"it's a lamp."}},
 		{{129,130,138,139}, {"it's a very plain bed. you imagine this is the servant's quarters."}},
 		{{136}, {"it's an old fridge. there's nothing inside but rotten food."}},
-		{{148}, "you search through the cabinet but find nothing."},
+		{{148}, {"you search through the cabinet but find nothing."}},
 		{{151}, {"this oven likely hasn't been used in a while."}},
 		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
@@ -125,6 +125,7 @@ function _update()
 			if not lights  and controls then
 				lights_dialog()
 			else
+				use_id()
 				add_inventory()
 				puzzle_select()
 				pick_up()
@@ -171,6 +172,8 @@ function _draw()
 			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
+		rectfill(0,0,22,8,1)
+	 rect(0,0,22,8,0)
 		if timer_mins <= 0 then
 			print(runtime,2,2,8)
 		else
@@ -244,7 +247,7 @@ end
 
 function draw_flowers()
 	if not flower_draw then
-		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
 	end
 end
 
@@ -908,8 +911,7 @@ function draw_room(room)
  pal()
  palt(0,false)
 	palt(14,true)
-	rectfill(0,0,22,8,1)
-	rect(0,0,22,8,0)
+	
 
 
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
@@ -1047,7 +1049,7 @@ function door_check()
 			end
 		elseif state==2 then
 			state = 1
-			p_y=15
+			p_y=14
 			if t == 87 then
 				p_x=8
 			elseif t == 88 then
@@ -1211,8 +1213,6 @@ function win_check()
 		if z and j and d and c then
 			set = time()
 			state = 5
-		else
-			show_dialog({"door is locked"},55,120)
 		end
 	end
 end
@@ -1328,9 +1328,9 @@ function arrow_check()
 			elseif f== 102 then
 				spr(52,0,48,1,1,true,false)
 			elseif f== 33 and lights then
-				spr(53,56,111)
+				spr(53,56,103)
 			elseif f== 34 and lights then
-				spr(53,64,111)
+				spr(53,64,103)
 			end
 		elseif state==2 then
 			if f == 87 then
@@ -1474,6 +1474,15 @@ local f,a=0
   reload(0,0,320)
 end
 
+function use_id()
+	for i=1,#item_dialogs do
+		for j=1,#item_dialogs[i][1] do
+			if tile_facing() == item_dialogs[i][1][j] then
+				show_dialog(item_dialogs[i][2],55,107,7)
+			end
+		end
+	end
+end
 -->8
 --intro/outtro code--
 function intro_draw()
@@ -1753,3 +1762,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
