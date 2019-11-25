@@ -241,7 +241,7 @@ end
 
 function draw_flowers()
 	if not flower_draw then
-		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
 	end
 end
 
@@ -1044,7 +1044,7 @@ function door_check()
 			end
 		elseif state==2 then
 			state = 1
-			p_y=15
+			p_y=14
 			if t == 87 then
 				p_x=8
 			elseif t == 88 then
@@ -1325,9 +1325,9 @@ function arrow_check()
 			elseif f== 102 then
 				spr(52,0,48,1,1,true,false)
 			elseif f== 33 and lights then
-				spr(53,56,111)
+				spr(53,56,103)
 			elseif f== 34 and lights then
-				spr(53,64,111)
+				spr(53,64,103)
 			end
 		elseif state==2 then
 			if f == 87 then
@@ -1750,3 +1750,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
