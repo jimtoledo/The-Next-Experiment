@@ -1126,6 +1126,8 @@ function puzzle_select()
 			if curr_key_item==157 then
 				show_dialog({"you filled\nthe water jug"},55,110)
 				curr_key_item=149
+			else
+				show_dialog({"the sink works"},44,110)			
 			end
 		end
 	elseif state == 4 then
