@@ -49,6 +49,27 @@ function _init()
 	print_x=0
 	print_y=0
 
+--dialog that should display if the player interacts with the sprites listed
+--TO DO: test them all and space them out D:
+	item_dialogs = {
+		{{3}, {"the wall is adorned with ominous paintings..."}},
+		{{36, 37}, {"it's a massive door with what looks like four missing plates", "find them to escape!"}},
+		{{35, 51}, {"it's an old mirror. in your reflection you see a nametag: experiment 438."}},
+		{{11,12,27,28}, {"it's a desk. on it lays a worn book, with a dry quill and ink well."}},
+		{{13,14,29,30}, "the shelf is full of various books on differnt kinds of science. they are quite dusty."},
+		{{9,10,25,26}, "there are many different kinds of books on the shelf. there seems to be one missing."},
+		{{56}, {"a simple chair. there's not much else to say."}},
+		{{128}, {"it's a lamp."}},
+		{{129,130,138,139}, {"it's a very plain bed. you imagine this is the servant's quarters."}},
+		{{136}, {"it's an old fridge. there's some kind of lock on it for some reason."}},
+		{{148}, "you search through the cabinet but find nothing."},
+		{{151}, {"this oven likely hasn't been used in a while."}},
+		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
+		{{212}, {"the bucket is filled with old soap water."}},
+		{{196,197}, {"you don't know what it is that's growing, but you don't want to touch it."}},
+		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}}
+	}
+
 	mech_room_init()
 	lab_room_init()
 	serv_room_init()
@@ -59,7 +80,6 @@ function _init()
 	dropped_items={
 	{4,1,8,212}}
 
-	--big dialogue table--
 end
 
 function _update()
