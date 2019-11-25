@@ -52,15 +52,15 @@ function _init()
 --dialog that should display if the player interacts with the sprites listed
 --TO DO: test them all and space them out D:
 	item_dialogs = {
-		{{3}, {"the wall is adorned with ominous paintings..."}},
-		{{36, 37}, {"it's a massive door with what looks like four missing plates", "find them to escape!"}},
+		{{3}, {"the wall is adorned\nwith some ominous", "paintings..."}},
+		{{36, 37}, {"it's a massive\nlocked door.", "it looks like there\nare panels missing.", "find them to escape!"}},
 		{{35, 51}, {"it's an old mirror. in your reflection you see a nametag: experiment 438."}},
-		{{11,12,27,28}, {"it's a desk. on it lays a worn book, with a dry quill and ink well."}},
-		{{13,14,29,30}, {"the shelf is full of various books on differnt kinds of science. they are quite dusty."}},
-		{{9,10,25,26}, {"there are many different kinds of books on the shelf. there seems to be one missing."}},
-		{{56}, {"a simple chair. there's not much else to say."}},
+		{{11,12,27,28}, {"it's a desk.","on it lays a worn\nbook, a dry quill,", "and an ink well."}},
+		{{13,14,29,30}, {"the shelf is full\nof various books on", "different kinds of\nsciences...", "you don't see\nanything special."}},
+		{{9,10,25,26}, {"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."}},
+		{{56}, {"a simple chair.", "there's not much\nelse to say."}},
 		{{128}, {"it's a lamp."}},
-		{{129,130,138,139}, {"it's a very plain bed. you imagine this is the servant's quarters."}},
+		{{129,130,138,139}, {"it's a very plain\nbed.", "you imagine this is the servant's quarters."}},
 		{{136}, {"it's an old fridge. there's nothing inside but rotten food."}},
 		{{148}, {"you search through the cabinet but find nothing."}},
 		{{151}, {"this oven likely hasn't been used in a while."}},
@@ -911,7 +911,7 @@ function draw_room(room)
  pal()
  palt(0,false)
 	palt(14,true)
-	
+
 
 
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
@@ -1478,7 +1478,7 @@ function use_id()
 	for i=1,#item_dialogs do
 		for j=1,#item_dialogs[i][1] do
 			if tile_facing() == item_dialogs[i][1][j] then
-				show_dialog(item_dialogs[i][2],55,107,7)
+				show_dialog(item_dialogs[i][2],50,115,7)
 			end
 		end
 	end
@@ -1762,4 +1762,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
