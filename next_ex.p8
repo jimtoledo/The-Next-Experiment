@@ -56,18 +56,21 @@ function _init()
 		{{36, 37}, {"it's a massive door with what looks like four missing plates", "find them to escape!"}},
 		{{35, 51}, {"it's an old mirror. in your reflection you see a nametag: experiment 438."}},
 		{{11,12,27,28}, {"it's a desk. on it lays a worn book, with a dry quill and ink well."}},
-		{{13,14,29,30}, "the shelf is full of various books on differnt kinds of science. they are quite dusty."},
-		{{9,10,25,26}, "there are many different kinds of books on the shelf. there seems to be one missing."},
+		{{13,14,29,30}, {"the shelf is full of various books on differnt kinds of science. they are quite dusty."}},
+		{{9,10,25,26}, {"there are many different kinds of books on the shelf. there seems to be one missing."}},
 		{{56}, {"a simple chair. there's not much else to say."}},
 		{{128}, {"it's a lamp."}},
 		{{129,130,138,139}, {"it's a very plain bed. you imagine this is the servant's quarters."}},
-		{{136}, {"it's an old fridge. there's some kind of lock on it for some reason."}},
+		{{136}, {"it's an old fridge. there's nothing inside but rotten food."}},
 		{{148}, "you search through the cabinet but find nothing."},
 		{{151}, {"this oven likely hasn't been used in a while."}},
 		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
 		{{196,197}, {"you don't know what it is that's growing, but you don't want to touch it."}},
-		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}}
+		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}},
+		{{157}, {"there's an empty pitcher on the table."}},
+		{{147}, {"there's a chest here with a padlock on it. you'll need the combination to open it."}},
+		{{194,195,210,211}, {"it's an old woodburning stove. there's a nice warm fire burning right now."}}
 	}
 
 	mech_room_init()
@@ -453,7 +456,7 @@ end
 function lock_draw()
 	cls()
 
- 
+
  sspr(112,72,8,8,43,0,40,35)
  sspr(80,72,8,8,36,32,54,17)
  sspr(80,72,8,8,36,47,54,17)
@@ -1151,7 +1154,7 @@ function puzzle_select()
 				show_dialog({"you filled\nthe water jug"},55,110)
 				curr_key_item=149
 			else
-				show_dialog({"the sink works"},44,110)			
+				show_dialog({"the sink works"},44,110)
 			end
 		end
 	elseif state == 4 then
@@ -1750,4 +1753,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
