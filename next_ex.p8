@@ -5,9 +5,9 @@ __lua__
 --music from: https://youtu.be/7umg6zrieh8--
 function _init()
 	final = false
-	
+
 	music(0,2000)
-	
+
 	palt(0,false)
 	palt(14,true)
 	--p_x and p_y are the indexes of the room arrays
@@ -23,7 +23,7 @@ function _init()
 	p_moving=false
 
 	state = 6
-	
+
 	timer_mins = 12
 	timer_secs = 0
 	timer_ticks = 0
@@ -34,13 +34,13 @@ function _init()
 	j =false
 	z =false
 	c =false
-	
+
 	controls = false
-	
-	lights = false
-	
+
+	lights = true
+
 	fail = false
-	
+
 	--dialog stuff--
 	dialog_state=0 --0 is not currently in dialog
 	dialog_messages={} --dialog to show (manipulated through different functions)
@@ -48,25 +48,47 @@ function _init()
 	dialog_counter=0 --animating dialog
 	print_x=0
 	print_y=0
-	
+
+--dialog that should display if the player interacts with the sprites listed
+--TO DO: test them all and space them out D:
+	item_dialogs = {
+		{{3}, {"the wall is adorned with ominous paintings..."}},
+		{{36, 37}, {"it's a massive door with what looks like four missing plates", "find them to escape!"}},
+		{{35, 51}, {"it's an old mirror. in your reflection you see a nametag: experiment 438."}},
+		{{11,12,27,28}, {"it's a desk. on it lays a worn book, with a dry quill and ink well."}},
+		{{13,14,29,30}, "the shelf is full of various books on differnt kinds of science. they are quite dusty."},
+		{{9,10,25,26}, "there are many different kinds of books on the shelf. there seems to be one missing."},
+		{{56}, {"a simple chair. there's not much else to say."}},
+		{{128}, {"it's a lamp."}},
+		{{129,130,138,139}, {"it's a very plain bed. you imagine this is the servant's quarters."}},
+		{{136}, {"it's an old fridge. there's some kind of lock on it for some reason."}},
+		{{148}, "you search through the cabinet but find nothing."},
+		{{151}, {"this oven likely hasn't been used in a while."}},
+		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
+		{{212}, {"the bucket is filled with old soap water."}},
+		{{196,197}, {"you don't know what it is that's growing, but you don't want to touch it."}},
+		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}}
+	}
+
 	mech_room_init()
 	lab_room_init()
 	serv_room_init()
 	mainroom_init()
-	
+
 	explo = false
-	
+
 	dropped_items={
 	{4,1,8,212}}
+
 end
 
 function _update()
 	if timer_mins <= 0 and timer_secs <= 0 then
 		fail = true
 		dialog_state = 0
-		state= 5	
+		state= 5
 	end
-	
+
 	if dialog_state==0 then
 		if d_done and not puzzle_win and not ex then
 			state=7
@@ -91,16 +113,16 @@ function _update()
 			end
 		end
 	end
-	
+
 	if(state < 5 and dialog_state==0) then
 		if controls then
 		 player_move()
 		end
-		if btnp(5)and not p_moving then 
+		if btnp(5)and not p_moving then
 			if not lights  and controls then
 				lights_dialog()
 			else
-				add_inventory() 
+				add_inventory()
 				puzzle_select()
 				pick_up()
 				win_check()
@@ -138,7 +160,7 @@ function _draw()
 	elseif state == 9 then
 		lock_draw()
 	end
-	
+
 	if state < 5 or state>=7 then
 		if state < 5 then
 			inv_display()
@@ -168,16 +190,14 @@ function mainroom_init()
 		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
 		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
 		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-		{102,19,19,19,19,19,19,19,19,19,19,19,19,19,19,101},
-		{19,19,19,19,19,19,19,6,7,8,19,19,19,19,19,19},
+		{102,19,19,19,19,19,19,6,7,8,19,19,19,19,19,101},
 		{19,19,19,19,19,19,19,22,23,24,19,19,19,19,19,19},
 		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-		{35,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-		{51,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
 		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-		{19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-		{19,19,19,19,19,19,19,33,34,19,19,19,19,19,19,19},
-		{19,19,19,19,19,19,19,49,50,19,19,19,19,19,19,19}
+		{35,19,19,19,19,19,19,19,19,19,19,19,13,14,9,10},
+		{51,19,19,19,19,19,19,19,19,19,19,19,29,30,25,26},
+		{11,12,19,19,19,19,19,33,34,19,19,19,19,19,19,19},
+		{27,28,56,19,19,19,19,49,50,19,19,19,19,19,19,19},
 	}
 flowers_solved = false
 flower_draw = true
@@ -188,8 +208,6 @@ end
 function main_room_draw()
 	cls(0)
 	draw_room(mainroom)
-	--add a condition to only draw the doorway arrow when near or
-	-- standing on the doorways
 	if not lights then
 		for i=2,15 do
 			pal(i,1)
@@ -198,7 +216,13 @@ function main_room_draw()
 		pal(5,0)
 		pal(2,0)
 	end
-	spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+	spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
+	spr(54, 40, 6)
+	spr(55, 80, 6)
+	spr(57, 104, 4)
+	spr(58, 112, 4)
+	spr(41, 20, 6)
+	spr()
 	pal()
 	palt(0,false)
 	palt(14,true)
@@ -239,7 +263,7 @@ function lab_room_init()
 	{19,19,19,112,113,114,115,116,117,19,19,19},
 	{19,19,19,19,19,19,19,19,19,19,19,19},
 	{19,19,19,19,19,19,19,19,19,19,19,19}}
-	
+
 	chem_colors={1,8,12,10,13,11}
 	chem_sol={1,8,11,12,13,10} --numbers represent colors of chemicals (dark blue,red,green,light blue,light indigo,yellow)
 	chem_mix={}
@@ -338,7 +362,7 @@ function chem_draw()
 	sspr(spr_x,spr_y,8,8,28,16,84,84)
 	if #chem_mix>1 and chem_anim>0 and sel_color~=0 then
 		if(#chem_mix==2) pal(15,chem_mix[1])
-		if chem_anim<24 then 
+		if chem_anim<24 then
 			sspr(80,56,8,8,28,16,84,84)
 		elseif chem_anim<48 then
 			sspr(88,56,8,8,28,16,84,84)
@@ -399,16 +423,15 @@ servroom= {
 	{128,208,208,208,143,144,208,208,208,208,208},
 	{141,208,208,208,145,146,142,208,208,208,208},
 	{102,208,208,208,208,208,208,208,208,208,208}}
-	
-	
+
 	jug_taken=false
-	
+
 end
 
 function serv_room_draw()
 	cls()
 	draw_room(servroom)
-	if(not jug_taken) then 
+	if(not jug_taken) then
 		if lights then
 			spr(157,52,40)
 		else
@@ -421,7 +444,7 @@ function serv_room_draw()
 			spr(157,52,40)
 			pal()
 			palt(0,false)
-			palt(14,true)	
+			palt(14,true)
 		end
 	end
 end
@@ -429,6 +452,7 @@ end
 
 function lock_draw()
 	cls()
+
  
  sspr(112,72,8,8,43,0,40,35)
  sspr(80,72,8,8,36,32,54,17)
@@ -446,9 +470,9 @@ function lock_draw()
 	elseif pad_sel==3 then
 		sspr(88,72,8,8,40,62,45,17)
 	end
-	
+
 	palt(14,true)
-	
+
 	cons()
 end
 
@@ -467,7 +491,7 @@ function lock_con()
 		num[pad_sel]-=1
 		if num[pad_sel]==-1 then
 			num[pad_sel]=9
-		end	
+		end
 	elseif btnp(1) then
 		num[pad_sel]+=1
 		if num[pad_sel]==10  then
@@ -497,9 +521,9 @@ function cons()
 	rect(2,85,127,127,7)
 	print(
 	"⬅️⬇️⬆️➡️: change numbers\n\n"..
-	"enter the correct number\n".. 
+	"enter the correct number\n"..
 	"to unlock the fridge.\n\n"..
-	"z: exit",4,88,7) 
+	"z: exit",4,88,7)
 end
 -->8
 --zoe--
@@ -509,13 +533,13 @@ function mech_room_init()
 	sel.x = 1
 	sel.y = 1
 	sel.dir = "none"
-	
+
 	exp= {}
 	for i = 1, 100 do
 	add(exp,{x=0,y=0,dx=0,dy=0,r=0,m=0,a=false})
 	end
-	
-	
+
+
 	puzzle_win= false
 	d_done =false
 	ex = false
@@ -528,7 +552,7 @@ function mech_room_init()
 	{208,208,208,208,208,208},
 	{208,208,208,208,208,208},
 	{254,208,208,208,196,197}}
-	
+
 	laser_puz = {
 	{208,208,208,208,208,208,208},
 	{176,208,208,208,208,208,208},
@@ -537,7 +561,7 @@ function mech_room_init()
 	{208,208,230,208,214,208,208},
 	{198,214,208,208,230,198,208},
 	{176,208,208,208,208,208,208}}
-	
+
 	puz_ans = {
 	{180,177,177,177,177,177,179},
 	{176,202,199,199,199,201,178},
@@ -555,14 +579,14 @@ function mech_room_init()
 	{208,208,230,208,214,208,208},
 	{198,214,208,208,230,198,208},
 	{176,208,208,208,208,208,208}}
-	
+
 
 end
-	
+
 function mech_room_draw()
 	cls()
 	draw_room(mechroom)
-	
+
 	if (explo and not j) spr(127,(64-((#mechroom[1]/2)*8)+36),4)
 end
 
@@ -576,7 +600,7 @@ function laser_draw()
 	x =64-((#laser_puz[1]/2)*8)
  y = 0
  for i=1,#laser_puz do
- 	for j=1,#laser_puz[1] do	
+ 	for j=1,#laser_puz[1] do
 			spr(laser_puz[i][j],x,y)
  		x+= 8
  	end
@@ -597,9 +621,9 @@ function draw_cons()
 	"❎: select / deselect\n"..
 	"⬅️⬇️⬆️➡️: move\n"..
 	"s: reset\n\n"..
-	"connect wires ".. 
+	"connect wires "..
 	"to restore power\n\n"..
-	"z: exit",4,78,7) 
+	"z: exit",4,78,7)
 end
 
 function laser_con()
@@ -608,7 +632,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("left",laser_puz)
 			sel.dir = "left"
-		end	
+		end
 		sel.x -= 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.x+= 1
@@ -623,7 +647,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("right",laser_puz)
 			sel.dir = "right"
-		end	
+		end
 		sel.x += 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.x -= 1
@@ -638,7 +662,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("up",laser_puz)
 			sel.dir = "up"
-		end	
+		end
 		sel.y -= 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.y+= 1
@@ -653,7 +677,7 @@ function laser_con()
 		if sel.color != 213 then
 			laser_map("down",laser_puz)
 			sel.dir = "down"
-		end	
+		end
 		sel.y += 1
 		if wall_check(sel.x,sel.y,laser_puz) then
 		 sel.y-= 1
@@ -695,7 +719,7 @@ function laser_con()
 				sel.color = 183
 			end
 		end
-	end		 
+	end
 end
 
 function wall_check(x,y,l)
@@ -721,7 +745,7 @@ function laser_map(d,l)
 	rd = lr+3
 	ru = lr+4
 	lu = lr+5
-	
+
 	if l[sel.y][sel.x]!= 214 and l[sel.y][sel.x]!= 198 and l[sel.y][sel.x]!= 246 and  l[sel.y][sel.x]!= 230 and l[sel.y][sel.x]!= 176 then
 		if d == "up" then
 			if sel.dir == "left" then
@@ -764,7 +788,7 @@ function puz_win()
  y = 0
  num_cor = 0
  for i=1,#laser_puz do
- 	for j=1,#laser_puz[1] do	
+ 	for j=1,#laser_puz[1] do
 			if laser_puz[i][j] == puz_ans[i][j] then
 				num_cor +=1
 			end
@@ -788,7 +812,7 @@ function puz_reset()
 	x =64-((#laser_puz[1]/2)*8)
  y = 0
  for i=1,#laser_puz do
- 	for j=1,#laser_puz[1] do	
+ 	for j=1,#laser_puz[1] do
 			laser_puz[i][j] = laser_reset[i][j]
  	end
  	x =64-((#laser_puz[1]/2)*8)
@@ -807,10 +831,10 @@ function explode(x,y,r,p)
 			exp[i].m = 0.5+rnd(2)
 			exp[i].r= 0.5+rnd(r)
 			exp[i].a = true
-			final += 1	
+			final += 1
 		end
 		if (final == p) break
-	end	
+	end
 end
 
 
@@ -829,7 +853,7 @@ function exp_draw()
 	for i=1,#exp do
 		if(exp[i].a) circfill(exp[i].x,exp[i].y,	exp[i].r,(rnd(2)+8))
 	end
-end	
+end
 -->8
 --other stuff--
 --generic draw room function that displays 2-d array of sprites
@@ -864,7 +888,7 @@ function draw_room(room)
 				if j<5 then
 					pal(5,5)
 				end
-			end		
+			end
 			spr(room[i][j],x,y)
  		x+= 8
  	end
@@ -1017,7 +1041,7 @@ function door_check()
 				state = 2
 				p_x=5
 				p_y=2
-			end								
+			end
 		elseif state==2 then
 			state = 1
 			p_y=15
@@ -1057,11 +1081,11 @@ function puzzle_select()
 				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
 				curr_key_item = -1
 			elseif not flowers_solved and curr_key_item!= 149 then
-				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
+				show_dialog({"there's a vase of\nflowers on the", "table.\nthey look like", "they could use\nsome water."},58,115)
 			end
 		elseif(stan == 35 or stan == 51) then
 			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.\n",
-			"'exp: 438'.", "what could that\nmean..?"}, 55, 110)
+			"'exp: 438'.", "what could that\nmean..?"}, 55, 115)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
@@ -1170,7 +1194,7 @@ function add_inventory()
 			jug_taken=true
 		end
 	elseif state == 4  then
-		
+
 		if explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
 			add(collected_pieces,127)
 			j = true
@@ -1202,8 +1226,8 @@ function game_timer()
 	else
 		timer_ticks +=1
 	end
-	
-	
+
+
 	if timer_secs <10 then
 	 game_time = timer_mins..":0"..timer_secs
 	else
@@ -1243,8 +1267,8 @@ function dialog_update()
 		end
 	end
 	dialog_counter+=1
-end	
-	
+end
+
 function dialog_draw()
 	local button=""
 	if dialog_curr_char==#dialog_messages[dialog_state] then
@@ -1256,7 +1280,7 @@ end
 
 function small_font(x)
 	lowered =""
-	
+
 	for i = 1, #x do
 		local a = sub(x,i,i)
 			if a>="a" and a<="z" then
@@ -1267,7 +1291,7 @@ function small_font(x)
       end
     end
    end
-  lowered = lowered..a	
+  lowered = lowered..a
 	end
 	return lowered
 end
@@ -1285,7 +1309,7 @@ function lights_dialog()
 			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 		else
 			show_dialog({"it is too dark\nto see anything"},55,115)
-		end	
+		end
 	else
 		show_dialog({"it is too dark\nto see anything"},55,115)
 	end
@@ -1304,7 +1328,7 @@ function arrow_check()
 				spr(53,56,111)
 			elseif f== 34 and lights then
 				spr(53,64,111)
-			end								
+			end
 		elseif state==2 then
 			if f == 87 then
 				spr(53,39,2,1,1,false,true)
@@ -1338,15 +1362,15 @@ function drop_item()
 			 room= mechroom
 				add(item,4)
 			end
-	
-		
+
+
 			add(item,playerx)
 			add(item,playery)
 			add(item,curr_key_item)
-			
+
 			room[playery][playerx] =254
 			curr_key_item =-1
-			
+
 			add(dropped_items,item)
 		end
 	end
@@ -1380,9 +1404,9 @@ function pick_up()
 				end
 			end
 		end
-	end	 
+	end
 end
---add it so it is a tile facing to put down and pick up		
+--add it so it is a tile facing to put down and pick up
 
 function player_facing()
 	local room
@@ -1491,12 +1515,12 @@ function win_draw()
 				---------
 			end
 			if (time()-set >= 12) music(-1,2000)
-			
-			
+
+
 			print("time left: "..runtime,hcenter("time left: "..runtime),70,6)
 			print("you have escaped",hcenter("you have escaped"),80,6)
 			print("press ❎ to play again",hcenter("press ❎ to play again"),90,6)
-		
+
 			i = 112
 			a = 1
 			x = 0
@@ -1514,14 +1538,14 @@ function win_draw()
 		cls(0)
 		print("you have failed",hcenter("you have failed"),60,8)
 		print("press ❎ to try again",hcenter("press ❎ to try again"),70,8)
-	
+
 		for i=2,15 do
 			pal(i,1)
 		end
 		pal(1,0)
 		pal(5,0)
 		pal(2,0)
-			
+
 		i = 112
 		a = 1
 		x = 0
@@ -1537,11 +1561,11 @@ function win_draw()
 		pal()
 		palt(0,false)
 		palt(14,true)
-	end		
-end	
+	end
+end
 
 function win_animation()
-	if time()-set >= 1 then 
+	if time()-set >= 1 then
 		mainroom[1][8] = 240
 	end
 	if time()-set >= 2 then
@@ -1553,7 +1577,7 @@ function win_animation()
 	if time()-set >= 4 then
 		mainroom[3][9] = 243
 	end
-	
+
 	if time()-set >= 5 then
 		mainroom[1][8] = 226
 		mainroom[1][9] = 227
@@ -1578,38 +1602,38 @@ function hcenter(s)
   return 64-#s*2
 end
 __gfx__
-00000000d1111111d111111122222222222222222222222255599999999999999999955500000000000000000000000000000000000000000000000000000000
-00000000111dd1111111dd1124442444244444444444444255922222222222222222295500000000000000000000000000000000000000000000000000000000
-0070070011d11d11111d11d124442444245225444452254259244444444444444444429500000000000000000000000000000000000000000000000000000000
-00077000d11dd111d111dd1124442444242552444425524292444444444444444444442900000000000000000000000000000000000000000000000000000000
-000770001111111d1d11111124442444242552444425524292444444444444444444442900000000000000000000000000000000000000000000000000000000
-00700700d1111111d111111124442444245225444452254292444444444444444444442900000000000000000000000000000000000000000000000000000000
-00000000111dd1111111dd1124442444244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
-0000000011d11d11111d11d122222222244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
-0000000011dd11111111dd1155555555244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
-000000001111111dd111111155555555244444444444444292444444444444444444442900000000000000000000000000000000000000000000000000000000
-00000000111111d11d11111155555555244444944944444292244444444444444444422900000000000000000000000000000000000000000000000000000000
-0000000011dd111dd111dd1155555555244449444494444259924444444444444444299500000000000000000000000000000000000000000000000000000000
-000000001d11d111111d11d155555555244449444494444255599999999999999999955500000000000000000000000000000000000000000000000000000000
-0000000011dd11111111dd1155555555244449444494444255552222222222222222555500000000000000000000000000000000000000000000000000000000
-000000001111111dd111111155555555244444944944444255552244444444444422555500000000000000000000000000000000000000000000000000000000
-00000000111111d11d11111155555555244444444444444255522244455555544422255500000000000000000000000000000000000000000000000000000000
-000000000000000000000000555555552444444444444442eeeeeeeeee8eee8eee8eee8e00000000000000000000000000000000000000000000000000000000
-000000000555555555555550555555552444444444444442ee8eee8ee88eee88e828e88800000000000000000000000000000000000000000000000000000000
-000000000555555555555550455555552452254444522542eee3e3eeeee3e3eeee83e38e00000000000000000000000000000000000000000000000000000000
-000000000555555555555550465555552425524444255242ee6637eeee6637eeee6637ee00000000000000000000000000000000000000000000000000000000
-000000000000000000000000465555552425524444255242ee6367eeee6367eeee6367ee00000000000000000000000000000000000000000000000000000000
-000000000011111111111100475555552452254444522542ee3666eeeecccceeeeccccee00000000000000000000000000000000000000000000000000000000
-000000000055555555555500465555552444444444444442ee7666eeee7ccceeee7cccee00000000000000000000000000000000000000000000000000000000
-0000000000555555555555004655555522222222222222228eeddee88eeddee88eeddee800000000000000000000000000000000000000000000000000000000
-00000000000000000000000047555555eeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010111111111101047555555eeee86eeeeeeeeee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010555555555501046555555ee88886eeee888ee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010000000000001046555555ee888886eee888ee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000010011111111001045555555ee88886eee88888e00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000001011111111010055555555eeee86eeee68886e00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000000000000055555555eeeeeeeeeee686ee00000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000000000000055555555eeeeeeeeeeee6eee00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000111111d11d11111122222222222222222222222255599999999999999999955599999999999999995555555555555555999999999999999900000000
+0000000011dd111dd111dd1124442444244444444444444255922222222222222222295599999999999999995555555555555555999999999999999900000000
+007007001d11d111111d11d124442444245225444452254259244444444444444444429599999999999999995555555555555555999999999999999900000000
+0007700011dd11111111dd1124442444242552444425524292444444444444444444442944444444444444445599999999999955444444444444444400000000
+000770001111111dd111111124442444242552444425524292444444444444444444442948226232222c2284594444444444449548226232222c228400000000
+00700700111111d11d111111244424442452254444522542924444444444444444444429482a65f1a28c21849433333333303349482a65f1a28c218400000000
+0000000011dd111dd111dd1124442444244444444444444292444444444444444444442948ca65312a8c6184943111733333564948ca65312a8c618400000000
+000000001d11d111111d11d122222222244444444444444292444444444444444444442944444444444444449431117333336569444444444444444400000000
+0000000011dd11111111dd115555555524444444444444429244444444444444444444294222232ca222223494311173333336594212232ca222223400000000
+000000001111111dd1111111555555552444444444444442924444444444444444444429422c235ca11281349431117336733349461c235ca112813400000000
+00000000111111d11d111111555555552444449449444442922444444444444444444229422c835ca67681349431117360063349461c835ca676813400000000
+0000000011dd111dd111dd1155555555244449444494444259924444444444444444299544444444444444445944444446744495444444444444444400000000
+000000001d11d111111d11d155555555244449444494444255599999999999999999955542322222c2282c54559999999999999542322222c2282c5400000000
+0000000011dd11111111dd11555555552444494444944442555522222222222222225555453a1282c1283c545522555555552255453a1282c1283c5400000000
+000000001111111dd1111111555555552444449449444442555522444444444444225555453a218ac1583c545522555555552255453a218ac1583c5400000000
+00000000111111d11d11111155555555244444444444444255522244455555544422255544444444444444445544555555554455444444444444444400000000
+000000000000000000000000555555552444444444444442eeeeeeeeee8eee8eee8eee8e44444444999999999999999999999999000000000000000000000000
+000000000555555555555550555555552444444444444442ee8eee8ee88eee88e828e88841111114993333333333333333333399000000000000000000000000
+000000000555555555555550455555552452254444522542eee3e3eeeee3e3eeee83e38e41177114939333333333333333333939000000000000000000000000
+000000000555555555555550465555552425524444255242ee6637eeee6637eeee6637ee41177114933333333333333333333339000000000000000000000000
+000000000000000000000000465555552425524444255242ee6367eeee6367eeee6367ee41677614933333333333333333333339000000000000000000000000
+000000000011111111111100475555552452254444522542ee3666eeeecccceeeeccccee40677654939333333333333333333939000000000000000000000000
+000000000055555555555500265555552444444444444442ee7666eeee7ccceeee7cccee45677604993333333333333333333399000000000000000000000000
+0000000000555555555555002655555522222222222222228eeddee88eeddee88eeddee844444444999999999999999999999999000000000000000000000000
+00000000000000000000000027555555eeeeeeeeeeeeeeeeeee44eeeee4444ee5555545544444444444444440000000000000000000000000000000000000000
+00000000010111111111101027555555eeee86eeeeeeeeeeee4774eee455354e5522245540000000000000040000000000000000000000000000000000000000
+00000000010555555555501026555555ee88886eeee888eee470074e455553545525545540055000000550040000000000000000000000000000000000000000
+00000000010000000000001026555555ee888886eee888eee47f074e455556545444425540577500005775040000000000000000000000000000000000000000
+00000000010011111111001025555555ee88886eee88888ee47f074e459a565454222255457cc750057cc7540000000000000000000000000000000000000000
+00000000001011111111010055555555eeee86eeee68886ee477874e429926245424425540577500005775040000000000000000000000000000000000000000
+00000000000000000000000055555555eeeeeeeeeee686eeee4884eee4ffff4e5222225540055000000550040000000000000000000000000000000000000000
+00000000000000000000000055555555eeeeeeeeeeee6eeeeee44eeeee4444ee5255525544444444444444440000000000000000000000000000000000000000
 5555555555555555555555555555555599999999999999999999999900000000000000001177eeee1177eeee1177eeeeee4444eeee4444eee44444eeee44444e
 5557775555777555555575555557555599999999999999999999999900000000000000001177eeee11771eee11771eeee444444ee444444ee444444ee444444e
 5557775555777555555575555557555599000000000000000000009900000000000000001177eeee1177eeee1177e1eee4ffff4ee4ffff4eeffff44ee44ffffe
@@ -1726,4 +1750,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
