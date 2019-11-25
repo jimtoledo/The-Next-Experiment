@@ -62,7 +62,7 @@ function _init()
 		{{128}, {"it's a lamp."}},
 		{{129,130,138,139}, {"it's a very plain bed. you imagine this is the servant's quarters."}},
 		{{136}, {"it's an old fridge. there's nothing inside but rotten food."}},
-		{{148}, "you search through the cabinet but find nothing."},
+		{{148}, {"you search through the cabinet but find nothing."}},
 		{{151}, {"this oven likely hasn't been used in a while."}},
 		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
@@ -125,6 +125,7 @@ function _update()
 			if not lights  and controls then
 				lights_dialog()
 			else
+				use_id()
 				add_inventory()
 				puzzle_select()
 				pick_up()
@@ -1212,8 +1213,6 @@ function win_check()
 		if z and j and d and c then
 			set = time()
 			state = 5
-		else
-			show_dialog({"door is locked"},55,120)
 		end
 	end
 end
@@ -1475,6 +1474,15 @@ local f,a=0
   reload(0,0,320)
 end
 
+function use_id()
+	for i=1,#item_dialogs do
+		for j=1,#item_dialogs[i][1] do
+			if tile_facing() == item_dialogs[i][1][j] then
+				show_dialog(item_dialogs[i][2],55,107,7)
+			end
+		end
+	end
+end
 -->8
 --intro/outtro code--
 function intro_draw()
