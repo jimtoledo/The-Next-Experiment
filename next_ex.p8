@@ -1089,12 +1089,12 @@ function puzzle_select()
 				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
 				curr_key_item = -1
 				use_item =false
-			elseif not flowers_solved and curr_key_item != -1 then
-				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water.","do you want\nto use your item?\na:yes\ts:no"},58,110)
-				item_prompt()
 			elseif use_item then
 				show_dialog({"this item doesn't\ndo anything"},55,107,7)
 				use_item = false
+			elseif not flowers_solved and curr_key_item != -1 then
+				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water.","do you want\nto use your item?\nx:yes\tz:no"},58,110)
+				item_prompt()
 			elseif not flowers_solved and curr_key_item == -1 then
 				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
 			end
@@ -1268,11 +1268,11 @@ function dialog_update()
 			sfx(10)
 		end
 	elseif prompt and dialog_state==#dialog_messages then
-		if btnp(0,1) then
+		if btnp(4) then
 			dialog_state = 0
 			prompt=false
 		end
-		if btnp(5,1) then
+		if btnp(5) then
 			use_item = true
 			dialog_state = 0
 			prompt=false
