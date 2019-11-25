@@ -83,6 +83,8 @@ function _init()
 	dropped_items={
 	{4,1,8,212}}
 
+	prompt = false
+	use_item = false
 end
 
 function _update()
@@ -1072,21 +1074,29 @@ function puzzle_select()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
-			if(flowers_solved == true) then
+				if(flowers_solved == true) then
 				show_dialog({"the flowers\nhave bloomed."},58,115)
-			elseif not flowers_solved and curr_key_item == 149 then
+			elseif not flowers_solved and curr_key_item == 149 and use_item then
 				ctime = time()
 				flower_draw = false
 				flowers_solved = true
 				add(collected_pieces,124)
 				sfx(1)
 				curr_key_item = -1
+				use_item = false
 				d = true
-			elseif not flowers_solved and curr_key_item == 212 then
+			elseif not flowers_solved and curr_key_item == 212 and use_item then
 				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
 				curr_key_item = -1
-			elseif not flowers_solved and curr_key_item!= 149 then
-				show_dialog({"there's a vase of\nflowers on the", "table.\nthey look like", "they could use\nsome water."},58,115)
+				use_item =false
+			elseif use_item then
+				show_dialog({"this item doesn't\ndo anything"},55,107,7)
+				use_item = false
+			elseif not flowers_solved and curr_key_item != -1 then
+				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water.","do you want\nto use your item?\nx:yes\tz:no"},58,110)
+				item_prompt()
+			elseif not flowers_solved and curr_key_item == -1 then
+				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
 			end
 		elseif(stan == 35 or stan == 51) then
 			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.\n",
@@ -1256,6 +1266,17 @@ function dialog_update()
 			dialog_counter=0
 			dialog_curr_char+=1
 			sfx(10)
+		end
+	elseif prompt and dialog_state==#dialog_messages then
+		if btnp(4) then
+			dialog_state = 0
+			prompt=false
+		end
+		if btnp(5) then
+			use_item = true
+			dialog_state = 0
+			prompt=false
+			puzzle_select()
 		end
 	elseif btnp(5) then
 		dialog_counter=0
@@ -1482,6 +1503,10 @@ function use_id()
 			end
 		end
 	end
+end
+
+function item_prompt()
+	prompt = true
 end
 -->8
 --intro/outtro code--
