@@ -1122,6 +1122,11 @@ function puzzle_select()
 			end
 		elseif til==156 then
 			show_dialog({"the chest is\nunlocked"},55,110)
+		elseif til== 134 or til== 150 then
+			if curr_key_item==157 then
+				show_dialog({"you filled\nthe water jug"},55,110)
+				curr_key_item=149
+			end
 		end
 	elseif state == 4 then
 		if til == 209 then
@@ -1159,7 +1164,7 @@ function add_inventory()
 			show_dialog({"my hands are too\nfull to carry this\n"},55,110)
 		else
 			show_dialog({"you received\nWATER JUG"},55,110)
-			curr_key_item=149
+			curr_key_item=157
 			jug_taken=true
 		end
 	elseif state == 4  then
