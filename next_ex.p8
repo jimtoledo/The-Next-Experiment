@@ -168,6 +168,8 @@ function _draw()
 			if(dialog_state>0) dialog_draw()
 		end
 		runtime = game_timer()
+		rectfill(0,0,22,8,1)
+	 rect(0,0,22,8,0)
 		if timer_mins <= 0 then
 			print(runtime,2,2,8)
 		else
@@ -905,8 +907,7 @@ function draw_room(room)
  pal()
  palt(0,false)
 	palt(14,true)
-	rectfill(0,0,22,8,1)
-	rect(0,0,22,8,0)
+	
 
 
  spr(p_spr,64-((#room[1]/2)*8)+flr(8*(p_x-1)),flr(8*(p_y-1))-4)
