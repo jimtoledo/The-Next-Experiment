@@ -68,7 +68,7 @@ function _init()
 		{{134, 150}, {"there's a sink...", "the water is\nmiraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
 		{{196,197}, {"something vile is\ngrowing here.", "you don't want\nto touch it."}},
-		{{222,223}, {"there's an big hole\nin the wall caused", "by the explosion\nyou created."}},
+		{{222,223}, {"there's a big hole\nin the wall caused", "by the explosion\nyou created."}},
 		{{157}, {"there's an empty\npitcher on the table."}},
 	}
 
@@ -231,7 +231,6 @@ function main_room_draw()
 	spr(57, 104, 4)
 	spr(58, 112, 4)
 	spr(41, 20, 6)
-	spr()
 	pal()
 	palt(0,false)
 	palt(14,true)
@@ -1519,10 +1518,12 @@ local f,a=0
 end
 
 function use_id()
-	for i=1,#item_dialogs do
-		for j=1,#item_dialogs[i][1] do
-			if tile_facing() == item_dialogs[i][1][j] then
-				show_dialog(item_dialogs[i][2],52,112,7)
+	if state< 5 or state>6 then
+		for i=1,#item_dialogs do
+			for j=1,#item_dialogs[i][1] do
+				if tile_facing() == item_dialogs[i][1][j] then
+					show_dialog(item_dialogs[i][2],52,112,7)
+				end
 			end
 		end
 	end
@@ -1567,6 +1568,11 @@ function win_draw()
 			win_animation()
 			draw_room(mainroom)
 			spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
+			spr(54, 40, 6)
+			spr(55, 80, 6)
+			spr(57, 104, 4)
+			spr(58, 112, 4)
+			spr(41, 20, 6)
 			rectfill(0,0,22,8,1)
 	 	rect(0,0,22,8,0)
 			print(runtime,2,2,7)
@@ -1829,7 +1835,7 @@ __sfx__
 013000001551015510175101751018510185101a5101a510185101851017510155101551017510185101551015510175101751018510175101751015510155101451014510115101051014510155101551000000
 0130000021510215102351023510245102451026510265102451024510235102151021510235102451021510215102351023510245102351023510215102151020510205101d5101c51020510215102151000000
 010300001852000500025000050002500005001150000500025000050002500005000050500505065050c505165051f5051b505155050d50507505005050050501505085050d5051f505155050c5050750509505
-010f00002462300000186152460027500275003850038500005000050000500005000050000500005000050000500000000000000000000000000000000000000000000000000000000000000000000000000000
+010f00002463300000186252460027500275003850038500005000050000500005000050000500005000050000500000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 01 02030405
 00 02030607
