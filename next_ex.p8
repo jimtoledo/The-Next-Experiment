@@ -1188,7 +1188,7 @@ function puzzle_select()
 				show_dialog({"power is already\nrestored"},55,110)
 			end
 		elseif til == 210 or til== 211 then
-			if curr_key_item==120 then
+			if curr_key_item==120 and use_item then
 				show_dialog({"you toss the\nchemical into\nthe stove","causing the stove\nto explode!"},55,105)
 				explode(80,12,3,80)
 				sfx(0)
@@ -1200,9 +1200,17 @@ function puzzle_select()
 				mechroom[3][6] =239
 				explo =true
 				curr_key_item=-1
-			elseif curr_key_item==104 then
+				use_item =false
+			elseif curr_key_item==104 and use_item then
 				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},55,110)
 				curr_key_item=-1
+				use_item =false
+			elseif curr_key_item!=104 and curr_key_item!=120  and use_item then
+				show_dialog({"this item doesn't\ndo anything"},55,107,7)
+				use_item = false
+			elseif curr_key_item != -1 then
+				show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle","do you want\nto use your item?\nx:yes\tz:no"},55,110)
+				item_prompt()
 			else
 				show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
 			end
