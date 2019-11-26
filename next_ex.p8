@@ -67,9 +67,8 @@ function _init()
 		{{134, 150}, {"there's a sink...", "the water is\nmiraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
 		{{196,197}, {"something vile is\ngrowing here.", "you don't want\nto touch it."}},
-		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}},
-		{{157}, {"there's an empty pitcher on the table."}},
-		{{194,195,210,211}, {"it's an old woodburning stove. there's a nice warm fire burning right now."}}
+		{{222,223}, {"there's an big hole\nin the wall caused", "by the explosion\nyou created."}},
+		{{157}, {"there's an empty\npitcher on the table."}},
 	}
 
 	mech_room_init()
