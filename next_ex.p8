@@ -60,13 +60,13 @@ function _init()
 		{{9,10,25,26}, {"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."}},
 		{{56}, {"a simple chair.", "there's not much\nelse to say."}},
 		{{128}, {"it's a lamp."}},
-		{{129,130,138,139}, {"it's a very plain\nbed.", "you imagine this is the servant's quarters."}},
-		{{136}, {"it's an old fridge. there's nothing inside but rotten food."}},
-		{{148}, {"you search through the cabinet but find nothing."}},
-		{{151}, {"this oven likely hasn't been used in a while."}},
-		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
+		{{129,130,138,139}, {"it's a very plain\nbed.", "there's nothing\nelse to see."}},
+		{{136}, {"it's an old fridge.","there's nothing\ninside."}},
+		{{148}, {"you search through\nthe cabinet...","but find nothing."}},
+		{{151}, {"this oven likely\nhasn't been used","in a while."}},
+		{{134, 150}, {"there's a sink...", "the water is\nmiraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
-		{{196,197}, {"you don't know what it is that's growing, but you don't want to touch it."}},
+		{{196,197}, {"something vile is\ngrowing here.", "you don't want\nto touch it."}},
 		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}},
 		{{157}, {"there's an empty pitcher on the table."}},
 		{{194,195,210,211}, {"it's an old woodburning stove. there's a nice warm fire burning right now."}}
@@ -106,7 +106,7 @@ function _update()
 		elseif btnp(5) then
 			if not controls and state < 5 then
 				controls =true
-				show_dialog({"it is too dark\nto see anything","i should try to\nrestore the power"},48,115)
+				show_dialog({"it is too dark\nto see anything","you need to\nrestore the power."},48,115)
 			end
 			if state == 5 and(fail or time() - set > 6)  then
 				state = 6
@@ -432,7 +432,7 @@ servroom= {
 	{102,208,208,208,208,208,208,208,208,208,208}}
 
 	jug_taken=false
-	
+
 	pad_lock_prompt=false
 
 end
@@ -1176,7 +1176,7 @@ function puzzle_select()
 			elseif curr_key_item != -1 then
 				show_dialog({"it appears that\nthe sink works","do you want\nto use your item?\nx:yes\tz:no"},58,110)
 				item_prompt()
-			else	
+			else
 				show_dialog({"it appears that\nthe sink works"},44,110)
 			end
 		end
@@ -1808,4 +1808,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
