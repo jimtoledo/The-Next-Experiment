@@ -4,7 +4,6 @@ __lua__
 --main functions--
 --music from: https://youtu.be/7umg6zrieh8--
 function _init()
-	final = false
 
 	music(0,2000)
 
@@ -24,6 +23,7 @@ function _init()
 
 	state = 6
 
+
 	timer_mins = 12
 	timer_secs = 0
 	timer_ticks = 0
@@ -40,6 +40,7 @@ function _init()
 	lights = false
 
 	fail = false
+	final_spr = 76
 
 	--dialog stuff--
 	dialog_state=0 --0 is not currently in dialog
@@ -54,9 +55,9 @@ function _init()
 	item_dialogs = {
 		{{3}, {"the wall is adorned\nwith some ominous", "paintings..."}},
 		{{36, 37}, {"it's a massive\nlocked door.", "it looks like there\nare panels missing.", "find them to escape!"}},
-		{{35, 51}, {"it's an old mirror.", "in your reflection\nyou see a nametag:","experiment 438."}},
-		{{11,12,27,28}, {"it's a desk.","on it lays a worn\nbook, a dry quill,", "and an ink well."}},
-		{{13,14,29,30}, {"the shelf is full\nof various books on", "different kinds of\nsciences...", "you don't see\nanything special."}},
+		{{35, 51}, {"it's an old mirror.", "in your reflection","you see a nametag:","experiment 438\n"}},
+		{{11,12,27,28}, {"it's a desk.","on it lays a worn\nbook,","a dry quill,", "and an ink well."}},
+		{{13,14,29,30}, {"the shelf is full\nof various books on\n", "different kinds of\nsciences...", "you don't see\nanything special."}},
 		{{9,10,25,26}, {"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."}},
 		{{56}, {"a simple chair.", "there's not much\nelse to say."}},
 		{{128}, {"it's a lamp."}},
@@ -83,12 +84,14 @@ function _init()
 
 	prompt = false
 	use_item = false
+	lock_sound=false
 end
 
 function _update()
 	if timer_mins <= 0 and timer_secs <= 0 then
 		fail = true
 		dialog_state = 0
+		set = time()
 		state= 5
 	end
 
@@ -105,7 +108,7 @@ function _update()
 		elseif btnp(5) then
 			if not controls and state < 5 then
 				controls =true
-				show_dialog({"it is too dark\nto see anything","you need to\nrestore the power."},48,115)
+				show_dialog({"it is too dark\nto see anything","you need to\nrestore the power"},52,113,7)
 			end
 			if state == 5 and(fail or time() - set > 6)  then
 				state = 6
@@ -1075,7 +1078,7 @@ function puzzle_select()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
 				if(flowers_solved == true) then
-				show_dialog({"the flowers\nhave bloomed."},58,115)
+				show_dialog({"the flowers\nhave bloomed."},52,115)
 			elseif not flowers_solved and curr_key_item == 149 and use_item then
 				ctime = time()
 				flower_draw = false
@@ -1093,24 +1096,24 @@ function puzzle_select()
 				show_dialog({"this item doesn't\ndo anything"},55,107,7)
 				use_item = false
 			elseif not flowers_solved and curr_key_item != -1 then
-				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water.","do you want\nto use your item?\nx:yes\tz:no"},58,110)
+				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water.","do you want\nto use your item?\nx:yes\tz:no"},52,110)
 				item_prompt()
 			elseif not flowers_solved and curr_key_item == -1 then
-				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
+				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},52,110)
 			end
 		elseif(stan == 35 or stan == 51) then
-		show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag:\n",
-		"'experiment #438'"}, 55, 115)
+		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
+		"experiment #438"}, 55, 115)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
 			if not chem_puzzle_intro then
-				show_dialog({"there are some\nchemicals on the\ntable.","there is also\nan empty beaker\nlabeled 'FRIEND'"},55,107)
+				show_dialog({"there are some\nchemicals on the\ntable.","there is also\nan empty beaker\nlabeled 'FRIEND'"},52,107)
 				chem_puzzle_intro=true
 			elseif curr_key_item~=-1 then
-				show_dialog({"my hands are too\nfull"},55,110)
+				show_dialog({"my hands are too\nfull"},52,110)
 			elseif explo then
-				show_dialog({"there are no\nempty beakers left"},55,110)
+				show_dialog({"there are no\nempty beakers left"},52,110)
 			else
 				state=8
 			end
@@ -1121,7 +1124,7 @@ function puzzle_select()
 			small_font("\"it explodes when\nexposed to just\na litle heat!\""),
 			small_font("\"it's definitely\nnot dark purple!\"\n"),
 			small_font("\"i've decided to\ncall it 'friend.'\"\n"),
-			small_font("\"i'm the only one\nthat knows how to\nmake friend!\"")},55,107)
+			small_font("\"i'm the only one\nthat knows how to\nmake friend!\"")},52,107)
 		--chalkboard
 		end
 		if til==64 or til==65 then
@@ -1151,32 +1154,32 @@ function puzzle_select()
 	elseif state == 3 then
 		if til==147  then
 			if not lights then
-				show_dialog({"it is too dark\nto see anything"},55,110)
+				show_dialog({"it is too dark\nto see anything"},52,110)
 			else
 				if c then
-					show_dialog({"the pad lock\nis open"},55,110)
+					show_dialog({"the pad lock\nis open"},52,110)
 				elseif not pad_lock_prompt then
-					show_dialog({"there's a chest\nhere with a\npadlock on it.","you'll need the\ncombination to\nopen it."},55,105,7)
+					show_dialog({"there's a chest\nhere with a\npadlock on it.","you'll need the\ncombination to\nopen it."},52,105,7)
 					pad_lock_prompt= true
 				else
 					state=9
 				end
 			end
 		elseif til==156 then
-			show_dialog({"the chest is\nunlocked"},55,110)
+			show_dialog({"the chest is\nunlocked"},52,110)
 		elseif til== 134 or til== 150 then
 			if curr_key_item==157 and use_item then
-				show_dialog({"you filled\nthe water jug"},55,110)
+				show_dialog({"you filled\nthe water jug"},52,110)
 				curr_key_item=149
 				use_item =false
 			elseif curr_key_item!=157 and use_item then
-				show_dialog({"this item doesn't\ndo anything"},55,107,7)
+				show_dialog({"this item doesn't\ndo anything"},52,107,7)
 				use_item = false
 			elseif curr_key_item != -1 then
-				show_dialog({"it appears that\nthe sink works","do you want\nto use your item?\nx:yes\tz:no"},58,110)
+				show_dialog({"it appears that\nthe sink works","do you want\nto use your item?\nx:yes\tz:no"},52,110)
 				item_prompt()
 			else
-				show_dialog({"it appears that\nthe sink works"},44,110)
+				show_dialog({"it appears that\nthe sink works"},52,110)
 			end
 		end
 	elseif state == 4 then
@@ -1188,7 +1191,7 @@ function puzzle_select()
 			end
 		elseif til == 210 or til== 211 then
 			if curr_key_item==120 and use_item then
-				show_dialog({"you toss the\nchemical into\nthe stove","causing the stove\nto explode!"},55,105)
+				show_dialog({"you toss the\nchemical into\nthe stove","causing the stove\nto explode!"},52,105)
 				explode(80,12,3,80)
 				sfx(0)
 				mechroom[1][5] =206
@@ -1201,7 +1204,7 @@ function puzzle_select()
 				curr_key_item=-1
 				use_item =false
 			elseif curr_key_item==104 and use_item then
-				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},55,110)
+				show_dialog({"you toss the\nchemical into\nthe stove","nothing happens"},52,110)
 				curr_key_item=-1
 				use_item =false
 			elseif curr_key_item!=104 and curr_key_item!=120  and use_item then
@@ -1316,7 +1319,7 @@ end
 function dialog_draw()
 	local button=""
 	if dialog_curr_char==#dialog_messages[dialog_state] then
-	 if(dialog_counter>10) button=" ❎"
+	 if(dialog_counter>10) button="❎"
 	 if(dialog_counter>20) dialog_counter=0
 	end
 	print(sub(dialog_messages[dialog_state],1,dialog_curr_char)..button,print_x,print_y,7)
@@ -1344,18 +1347,18 @@ function lights_dialog()
 	if state == 4 then
 		if tile_facing() == 209 and not puzzle_intro then
 			if not d_done then
-				show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},55,105)
+				show_dialog({"it appears to be\nan electrical\npanel","the wires are\ndisconnected"},52,110)
 				d_done = true
 			else
 				state = 7
 			end
 		elseif tile_facing() == 210 or tile_facing()==211 then
-			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},55,110)
+			show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle"},52,110)
 		else
-			show_dialog({"it is too dark\nto see anything"},55,115)
+			show_dialog({"it is too dark\nto see anything"},52,110)
 		end
 	else
-		show_dialog({"it is too dark\nto see anything"},55,115)
+		show_dialog({"it is too dark\nto see anything"},52,115)
 	end
 end
 
@@ -1519,7 +1522,7 @@ function use_id()
 	for i=1,#item_dialogs do
 		for j=1,#item_dialogs[i][1] do
 			if tile_facing() == item_dialogs[i][1][j] then
-				show_dialog(item_dialogs[i][2],50,115,7)
+				show_dialog(item_dialogs[i][2],52,112,7)
 			end
 		end
 	end
@@ -1559,19 +1562,18 @@ end
 
 function win_draw()
 	if not fail then
-		if time()-set <= 6 then
+		if time()-set <= 7 then
+			cls()
 			win_animation()
 			draw_room(mainroom)
-			spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+			spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
+			rectfill(0,0,22,8,1)
+	 	rect(0,0,22,8,0)
 			print(runtime,2,2,7)
 		else
 			cls(5)
-			if final then
-				--final--
-				con_animation()
-				---------
-			end
-			if (time()-set >= 12) music(-1,2000)
+			con_animation()
+			if (time()-set >= 11) music(-1,2000)
 
 
 			print("time left: "..runtime,hcenter("time left: "..runtime),70,6)
@@ -1593,8 +1595,9 @@ function win_draw()
 		end
 	else
 		cls(0)
-		print("you have failed",hcenter("you have failed"),60,8)
-		print("press ❎ to try again",hcenter("press ❎ to try again"),70,8)
+		if (time()-set >= 8) music(-1,2000)
+		print("you have failed",hcenter("you have failed"),70,8)
+		print("press ❎ to try again",hcenter("press ❎ to try again"),80,8)
 
 		for i=2,15 do
 			pal(i,1)
@@ -1636,21 +1639,45 @@ function win_animation()
 	end
 
 	if time()-set >= 5 then
+		if not lock_sound then
+			sfx(11)
+			lock_sound=true
+		end
 		mainroom[1][8] = 226
 		mainroom[1][9] = 227
 		mainroom[2][8] = 228
 		mainroom[2][9] = 229
 		mainroom[3][8] = 244
 		mainroom[3][9] = 245
+		
 	end
 end
 
 function con_animation()
-	if (time()-set >= 6) print(small_font("you escaped my lab!\nthis is fantastic!"),55,5,3)
-	if (time()-set >= 7) print(".",1,20,12)
-	if (time()-set >= 7.4) print(".",5,20,12)
-	if (time()-set >= 7.8) print(".",9,20,12)
-	if (time()-set >= 8) print(small_font("this means you are\nsmart enough to be\nmy friend and stay\nhere forever!"), 55,30,3)
+	local x
+	if (time()-set >= 7 and time()-set <= 7.5) then
+		final_spr = 79 
+		x = -1
+	elseif (time()-set >=7.5 and time()-set <= 8) then
+		final_spr = 95 
+		x = 2
+ elseif (time()-set >= 8 and time()-set <= 8.5) then
+		final_spr = 111 
+		x = 4
+	elseif (time()-set >= 8.5 and time()-set <= 9) then
+		final_spr = 79 
+		x = 8
+	elseif (time()-set >= 9) then
+		final_spr = 76
+		x = 8
+	end
+	spr(final_spr,x,60)
+	spr(191,110,60)
+	if (time()-set >= 9.5) print(small_font("you escaped my lab!\nthis is fantastic!"),55,5,3)
+	if (time()-set >= 10) print(".",1,20,12)
+	if (time()-set >= 10.4) print(".",5,20,12)
+	if (time()-set >= 10.8) print(".",9,20,12)
+	if (time()-set >= 11.5) print(small_font("this means you are\nsmart enough to be\nmy friend and stay\nhere forever!"), 55,30,3)
 
 end
 
@@ -1754,7 +1781,7 @@ aaaaaaaaaaaaaaaa555aa555aaaaa555555aaaaa555aaaaaaaaaa555aeeeeeea0000000000000000
 aaaaaaaaaaaaaaaa555aa555aaaaa555555aaaaa555aaaaaaaaaa555aeeeeeea00000000000000000000000000000000000000000000000000000000ecffffce
 aaaaaaaa55555555555aa555555aa555555aa5555555555555555555aeeeeeea00000000000000000000000000000000000000000000000000000000ef7887fe
 5aaaaaa555555555555aa555555aa555555aa5555555555555555555aeeeeeea00000000000000000000000000000000000000000000000000000000ef7887fe
-55aaaa5555555555555aa555555aa555555aa5555555555555555555aaaaaaaa00000000000000000000000000000000000000000000000000000000ee5ee5ee
+55aaaa5555555555555aa555555aa555555aa5555555555555555555aaaaaaaa00000000000000000000000000000000000000000000000000000000ee1ee1ee
 1dd1dd1d1dd1dd1dd1552d2dd2dd201155555555555555555533335555555555555335555555555555555555555335555553355533333333d1dd1d1dd1dd1d1d
 111111111111111111552222222200005555555555535555533333355555555555533555555555555555555555533555555335553eeeeee31111111111111111
 d1dd1dd1d1dd1dd1dd55d2d2dd21101055555b555555355b333333335555555555533555555555555555555555533555555335553eeeeee3dd1dd1d1dd1dd1d1
@@ -1802,8 +1829,9 @@ __sfx__
 013000001551015510175101751018510185101a5101a510185101851017510155101551017510185101551015510175101751018510175101751015510155101451014510115101051014510155101551000000
 0130000021510215102351023510245102451026510265102451024510235102151021510235102451021510215102351023510245102351023510215102151020510205101d5101c51020510215102151000000
 010300001852000500025000050002500005001150000500025000050002500005000050500505065050c505165051f5051b505155050d50507505005050050501505085050d5051f505155050c5050750509505
-010100002462222700225002750027500385003850000500005000050000500005000050000500005000050000000000000000000000000000000000000000000000000000000000000000000000000000000000
+010f00002462300000186152460027500275003850038500005000050000500005000050000500005000050000500000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 01 02030405
 00 02030607
 02 02030809
+
