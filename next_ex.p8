@@ -37,7 +37,7 @@ function _init()
 
 	controls = false
 
-	lights = true
+	lights = false
 
 	fail = false
 
@@ -54,7 +54,7 @@ function _init()
 	item_dialogs = {
 		{{3}, {"the wall is adorned\nwith some ominous", "paintings..."}},
 		{{36, 37}, {"it's a massive\nlocked door.", "it looks like there\nare panels missing.", "find them to escape!"}},
-		{{35, 51}, {"it's an old mirror. in your reflection you see a nametag: experiment 438."}},
+		{{35, 51}, {"it's an old mirror.", "in your reflection\nyou see a nametag:","experiment 438."}},
 		{{11,12,27,28}, {"it's a desk.","on it lays a worn\nbook, a dry quill,", "and an ink well."}},
 		{{13,14,29,30}, {"the shelf is full\nof various books on", "different kinds of\nsciences...", "you don't see\nanything special."}},
 		{{9,10,25,26}, {"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."}},
@@ -1100,8 +1100,8 @@ function puzzle_select()
 				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
 			end
 		elseif(stan == 35 or stan == 51) then
-			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.\n",
-			"'exp: 438'.", "what could that\nmean..?"}, 55, 115)
+		show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag:\n",
+		"'experiment #438'"}, 55, 115)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
