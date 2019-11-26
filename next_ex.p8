@@ -69,7 +69,6 @@ function _init()
 		{{196,197}, {"you don't know what it is that's growing, but you don't want to touch it."}},
 		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}},
 		{{157}, {"there's an empty pitcher on the table."}},
-		{{147}, {"there's a chest here with a padlock on it. you'll need the combination to open it."}},
 		{{194,195,210,211}, {"it's an old woodburning stove. there's a nice warm fire burning right now."}}
 	}
 
@@ -433,6 +432,8 @@ servroom= {
 	{102,208,208,208,208,208,208,208,208,208,208}}
 
 	jug_taken=false
+	
+	pad_lock_prompt=false
 
 end
 
@@ -1155,18 +1156,28 @@ function puzzle_select()
 			else
 				if c then
 					show_dialog({"the pad lock\nis open"},55,110)
+				elseif not pad_lock_prompt then
+					show_dialog({"there's a chest\nhere with a\npadlock on it.","you'll need the\ncombination to\nopen it."},55,105,7)
+					pad_lock_prompt= true
 				else
-					state = 9
+					state=9
 				end
 			end
 		elseif til==156 then
 			show_dialog({"the chest is\nunlocked"},55,110)
 		elseif til== 134 or til== 150 then
-			if curr_key_item==157 then
+			if curr_key_item==157 and use_item then
 				show_dialog({"you filled\nthe water jug"},55,110)
 				curr_key_item=149
-			else
-				show_dialog({"the sink works"},44,110)
+				use_item =false
+			elseif curr_key_item!=157 and use_item then
+				show_dialog({"this item doesn't\ndo anything"},55,107,7)
+				use_item = false
+			elseif curr_key_item != -1 then
+				show_dialog({"it appears that\nthe sink works","do you want\nto use your item?\nx:yes\tz:no"},58,110)
+				item_prompt()
+			else	
+				show_dialog({"it appears that\nthe sink works"},44,110)
 			end
 		end
 	elseif state == 4 then
@@ -1286,6 +1297,8 @@ function dialog_update()
 		else
 			if tile_facing() >= 112 and tile_facing() <= 117 and dialog_state==2 then
 				state=8
+			elseif tile_facing() ==147 and dialog_state == 2 then
+				state=9
 			end
 			dialog_state=0
 		end
@@ -1787,3 +1800,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
