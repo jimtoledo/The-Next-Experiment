@@ -4,7 +4,6 @@ __lua__
 --main functions--
 --music from: https://youtu.be/7umg6zrieh8--
 function _init()
-	final = false
 
 	music(0,2000)
 
@@ -24,6 +23,7 @@ function _init()
 
 	state = 6
 
+
 	timer_mins = 12
 	timer_secs = 0
 	timer_ticks = 0
@@ -37,9 +37,10 @@ function _init()
 
 	controls = false
 
-	lights = true
+	lights = false
 
 	fail = false
+	final_spr = 76
 
 	--dialog stuff--
 	dialog_state=0 --0 is not currently in dialog
@@ -84,12 +85,14 @@ function _init()
 
 	prompt = false
 	use_item = false
+	lock_sound=false
 end
 
 function _update()
 	if timer_mins <= 0 and timer_secs <= 0 then
 		fail = true
 		dialog_state = 0
+		set = time()
 		state= 5
 	end
 
@@ -1560,19 +1563,18 @@ end
 
 function win_draw()
 	if not fail then
-		if time()-set <= 6 then
+		if time()-set <= 7 then
+			cls()
 			win_animation()
 			draw_room(mainroom)
-			spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(8-1)))
+			spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
+			rectfill(0,0,22,8,1)
+	 	rect(0,0,22,8,0)
 			print(runtime,2,2,7)
 		else
 			cls(5)
-			if final then
-				--final--
-				con_animation()
-				---------
-			end
-			if (time()-set >= 12) music(-1,2000)
+			con_animation()
+			if (time()-set >= 11) music(-1,2000)
 
 
 			print("time left: "..runtime,hcenter("time left: "..runtime),70,6)
@@ -1594,8 +1596,9 @@ function win_draw()
 		end
 	else
 		cls(0)
-		print("you have failed",hcenter("you have failed"),60,8)
-		print("press ❎ to try again",hcenter("press ❎ to try again"),70,8)
+		if (time()-set >= 8) music(-1,2000)
+		print("you have failed",hcenter("you have failed"),70,8)
+		print("press ❎ to try again",hcenter("press ❎ to try again"),80,8)
 
 		for i=2,15 do
 			pal(i,1)
@@ -1637,21 +1640,45 @@ function win_animation()
 	end
 
 	if time()-set >= 5 then
+		if not lock_sound then
+			sfx(11)
+			lock_sound=true
+		end
 		mainroom[1][8] = 226
 		mainroom[1][9] = 227
 		mainroom[2][8] = 228
 		mainroom[2][9] = 229
 		mainroom[3][8] = 244
 		mainroom[3][9] = 245
+		
 	end
 end
 
 function con_animation()
-	if (time()-set >= 6) print(small_font("you escaped my lab!\nthis is fantastic!"),55,5,3)
-	if (time()-set >= 7) print(".",1,20,12)
-	if (time()-set >= 7.4) print(".",5,20,12)
-	if (time()-set >= 7.8) print(".",9,20,12)
-	if (time()-set >= 8) print(small_font("this means you are\nsmart enough to be\nmy friend and stay\nhere forever!"), 55,30,3)
+	local x
+	if (time()-set >= 7 and time()-set <= 7.5) then
+		final_spr = 79 
+		x = -1
+	elseif (time()-set >=7.5 and time()-set <= 8) then
+		final_spr = 95 
+		x = 2
+ elseif (time()-set >= 8 and time()-set <= 8.5) then
+		final_spr = 111 
+		x = 4
+	elseif (time()-set >= 8.5 and time()-set <= 9) then
+		final_spr = 79 
+		x = 8
+	elseif (time()-set >= 9) then
+		final_spr = 76
+		x = 8
+	end
+	spr(final_spr,x,60)
+	spr(191,110,60)
+	if (time()-set >= 9.5) print(small_font("you escaped my lab!\nthis is fantastic!"),55,5,3)
+	if (time()-set >= 10) print(".",1,20,12)
+	if (time()-set >= 10.4) print(".",5,20,12)
+	if (time()-set >= 10.8) print(".",9,20,12)
+	if (time()-set >= 11.5) print(small_font("this means you are\nsmart enough to be\nmy friend and stay\nhere forever!"), 55,30,3)
 
 end
 
@@ -1755,7 +1782,7 @@ aaaaaaaaaaaaaaaa555aa555aaaaa555555aaaaa555aaaaaaaaaa555aeeeeeea0000000000000000
 aaaaaaaaaaaaaaaa555aa555aaaaa555555aaaaa555aaaaaaaaaa555aeeeeeea00000000000000000000000000000000000000000000000000000000ecffffce
 aaaaaaaa55555555555aa555555aa555555aa5555555555555555555aeeeeeea00000000000000000000000000000000000000000000000000000000ef7887fe
 5aaaaaa555555555555aa555555aa555555aa5555555555555555555aeeeeeea00000000000000000000000000000000000000000000000000000000ef7887fe
-55aaaa5555555555555aa555555aa555555aa5555555555555555555aaaaaaaa00000000000000000000000000000000000000000000000000000000ee5ee5ee
+55aaaa5555555555555aa555555aa555555aa5555555555555555555aaaaaaaa00000000000000000000000000000000000000000000000000000000ee1ee1ee
 1dd1dd1d1dd1dd1dd1552d2dd2dd201155555555555555555533335555555555555335555555555555555555555335555553355533333333d1dd1d1dd1dd1d1d
 111111111111111111552222222200005555555555535555533333355555555555533555555555555555555555533555555335553eeeeee31111111111111111
 d1dd1dd1d1dd1dd1dd55d2d2dd21101055555b555555355b333333335555555555533555555555555555555555533555555335553eeeeee3dd1dd1d1dd1dd1d1
@@ -1803,7 +1830,7 @@ __sfx__
 013000001551015510175101751018510185101a5101a510185101851017510155101551017510185101551015510175101751018510175101751015510155101451014510115101051014510155101551000000
 0130000021510215102351023510245102451026510265102451024510235102151021510235102451021510215102351023510245102351023510215102151020510205101d5101c51020510215102151000000
 010300001852000500025000050002500005001150000500025000050002500005000050500505065050c505165051f5051b505155050d50507505005050050501505085050d5051f505155050c5050750509505
-010100002462222700225002750027500385003850000500005000050000500005000050000500005000050000000000000000000000000000000000000000000000000000000000000000000000000000000000
+010f00002462300000186152460027500275003850038500005000050000500005000050000500005000050000500000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 01 02030405
 00 02030607
