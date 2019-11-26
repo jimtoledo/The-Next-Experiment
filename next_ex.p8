@@ -37,7 +37,7 @@ function _init()
 
 	controls = false
 
-	lights = true
+	lights = false
 
 	fail = false
 
@@ -54,22 +54,21 @@ function _init()
 	item_dialogs = {
 		{{3}, {"the wall is adorned\nwith some ominous", "paintings..."}},
 		{{36, 37}, {"it's a massive\nlocked door.", "it looks like there\nare panels missing.", "find them to escape!"}},
-		{{35, 51}, {"it's an old mirror. in your reflection you see a nametag: experiment 438."}},
+		{{35, 51}, {"it's an old mirror.", "in your reflection\nyou see a nametag:","experiment 438."}},
 		{{11,12,27,28}, {"it's a desk.","on it lays a worn\nbook, a dry quill,", "and an ink well."}},
 		{{13,14,29,30}, {"the shelf is full\nof various books on", "different kinds of\nsciences...", "you don't see\nanything special."}},
 		{{9,10,25,26}, {"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."}},
 		{{56}, {"a simple chair.", "there's not much\nelse to say."}},
 		{{128}, {"it's a lamp."}},
-		{{129,130,138,139}, {"it's a very plain\nbed.", "you imagine this is the servant's quarters."}},
-		{{136}, {"it's an old fridge. there's nothing inside but rotten food."}},
-		{{148}, {"you search through the cabinet but find nothing."}},
-		{{151}, {"this oven likely hasn't been used in a while."}},
-		{{134, 150}, {"there's a sink. the water is miraculously still running."}},
+		{{129,130,138,139}, {"it's a very plain\nbed.", "there's nothing\nelse to see."}},
+		{{136}, {"it's an old fridge.","there's nothing\ninside."}},
+		{{148}, {"you search through\nthe cabinet...","but find nothing."}},
+		{{151}, {"this oven likely\nhasn't been used","in a while."}},
+		{{134, 150}, {"there's a sink...", "the water is\nmiraculously still running."}},
 		{{212}, {"the bucket is filled with old soap water."}},
-		{{196,197}, {"you don't know what it is that's growing, but you don't want to touch it."}},
-		{{222,223}, {"there's an big hole in the wall caused by the explosion you created. there's no way through it though."}},
-		{{157}, {"there's an empty pitcher on the table."}},
-		{{194,195,210,211}, {"it's an old woodburning stove. there's a nice warm fire burning right now."}}
+		{{196,197}, {"something vile is\ngrowing here.", "you don't want\nto touch it."}},
+		{{222,223}, {"there's an big hole\nin the wall caused", "by the explosion\nyou created."}},
+		{{157}, {"there's an empty\npitcher on the table."}},
 	}
 
 	mech_room_init()
@@ -106,7 +105,7 @@ function _update()
 		elseif btnp(5) then
 			if not controls and state < 5 then
 				controls =true
-				show_dialog({"it is too dark\nto see anything","i should try to\nrestore the power"},48,115)
+				show_dialog({"it is too dark\nto see anything","you need to\nrestore the power."},48,115)
 			end
 			if state == 5 and(fail or time() - set > 6)  then
 				state = 6
@@ -432,7 +431,7 @@ servroom= {
 	{102,208,208,208,208,208,208,208,208,208,208}}
 
 	jug_taken=false
-	
+
 	pad_lock_prompt=false
 
 end
@@ -1100,8 +1099,8 @@ function puzzle_select()
 				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},58,110)
 			end
 		elseif(stan == 35 or stan == 51) then
-			show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag.\n",
-			"'exp: 438'.", "what could that\nmean..?"}, 55, 115)
+		show_dialog({"it's an old\nmirror.", "on your reflection\nyou see a nametag:\n",
+		"'experiment #438'"}, 55, 115)
 		end
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
@@ -1176,7 +1175,7 @@ function puzzle_select()
 			elseif curr_key_item != -1 then
 				show_dialog({"it appears that\nthe sink works","do you want\nto use your item?\nx:yes\tz:no"},58,110)
 				item_prompt()
-			else	
+			else
 				show_dialog({"it appears that\nthe sink works"},44,110)
 			end
 		end
@@ -1808,4 +1807,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
