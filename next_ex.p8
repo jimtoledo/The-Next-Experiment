@@ -272,6 +272,7 @@ function lab_room_init()
 	{19,19,19,19,19,19,19,19,19,19,19,19},
 	{19,19,19,19,19,19,19,19,19,19,19,19}}
 
+	chem_selector=1
 	chem_colors={1,8,12,10,13,11}
 	chem_sol={1,8,11,12,13,10} --numbers represent colors of chemicals (dark blue,red,green,light blue,light indigo,yellow)
 	chem_mix={}
@@ -309,18 +310,25 @@ function chem_con()
 				show_dialog({"you received\nMYSTERIOUS\nCHEMICAL!"},55,105)
 				chem_anim=0
 				chem_mix={}
+				return
 			end
-		end
-		if btnp(5,1) and #chem_mix < #chem_sol then
-			state=2
-		elseif btn(0,1) and #chem_mix < #chem_sol then
-			chem_mix={}
-		elseif btnp(0,0) then sel_color=12
-		elseif btnp(1,0) then sel_color=10
-		elseif btnp(2,0) then sel_color=1
-		elseif btnp(3,0) then sel_color=8
-		elseif btnp(4,0) then sel_color=13
-		elseif btnp(5,0) then sel_color=11
+		else
+			d_sel=0
+			if(btnp(2)) d_sel-=1
+			if(btnp(3)) d_sel+=1
+			chem_selector+=d_sel
+			if(chem_selector<1) chem_selector=6
+			if(chem_selector>6) chem_selector=1
+			if btnp(5) then
+				sel_color=chem_colors[chem_selector]
+			end
+			if(btn(0)) chem_mix={}
+			if(btn(4)) then
+				sel_color=0
+				chem_anim=0
+				chem_selector=-1
+				state=2
+			end
 		end
 		if sel_color~=0 and not chem_mix_contains(sel_color) then
 			add(chem_mix,sel_color)
@@ -382,16 +390,16 @@ function chem_draw()
 end
 
 function chem_con_draw()
-	rect(14,104,114,127,7)
-	print("try to mix the chemicals\nin the correct order",17,107,7)
-	print("⬆️\n\n⬇️\n\n⬅️\n\n➡️\n\nz\n\nx",3,33,7)
+	rect(8,104,120,127,7)
+	print("try to mix the chemicals in\nthe correct order\n⬆️⬇️:change color ❎:select",10,107,7)
 	for i=1,6 do
 		pal(15,chem_colors[i])
-		spr(118,12,12*i+21)
+		spr(118,12,12*i)
 	end
 	pal(15,15)
-	print("s:reset",3,9,7)
-	print("a:quit",3,21,7)
+	rect(9,12*(chem_selector)-3,21,12*(chem_selector)+10,10)
+	print("⬅️:reset",9,84,7)
+	print("🅾️:quit",9,96,7)
 end
 
 function chem_order_draw()
