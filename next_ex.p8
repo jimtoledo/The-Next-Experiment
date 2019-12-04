@@ -542,7 +542,7 @@ function cons()
 	print(
 	"⬅️⬇️⬆️➡️: change numbers\n\n"..
 	"enter the correct number\n"..
-	"to unlock the fridge.\n\n"..
+	"to unlock the chest.\n\n"..
 	"z: exit",4,88,7)
 end
 -->8
@@ -1175,7 +1175,7 @@ function puzzle_select()
 				if c then
 					show_dialog({"the pad lock\nis open"},52,110)
 				elseif not pad_lock_prompt then
-					show_dialog({"there's a chest\nhere with a\npadlock on it.","you'll need the\ncombination to\nopen it."},52,105,7)
+					show_dialog({"there's a chest\nhere with a\npadlock on it.",,"it's labeled 'experiment's items'.","you'll need the\ncombination to\nopen it."},52,105,7)
 					pad_lock_prompt= true
 				else
 					state=9
@@ -1241,7 +1241,7 @@ function add_inventory()
 		if curr_key_item~=-1 then
 			show_dialog({"my hands are too\nfull to carry this\n"},55,110)
 		else
-			show_dialog({"you received\nWATER JUG"},55,110)
+			show_dialog({"you received\nempty jug"},55,110)
 			curr_key_item=157
 			jug_taken=true
 		end
