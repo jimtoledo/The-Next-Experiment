@@ -1175,14 +1175,14 @@ function puzzle_select()
 				if c then
 					show_dialog({"the pad lock\nis open"},52,110)
 				elseif not pad_lock_prompt then
-					show_dialog({"there's a chest\nhere with a\npadlock on it.",,"it's labeled 'experiment's items'.","you'll need the\ncombination to\nopen it."},52,105,7)
+					show_dialog({"there's a chest\nhere with a\npadlock on it.","it's labeled\n'experiment's\nitems'","you'll need the\ncombination to\nopen it."},52,105,7)
 					pad_lock_prompt= true
 				else
 					state=9
 				end
 			end
 		elseif til==156 then
-			show_dialog({"the chest is\nunlocked"},52,110)
+			show_dialog({"the chest is\nunlocked","it contained a\ndoor panel","it also has\nother un-interesting items"},52,110)
 		elseif til== 134 or til== 150 then
 			if curr_key_item==157 and use_item then
 				show_dialog({"you filled\nthe water jug"},52,110)
@@ -1324,7 +1324,7 @@ function dialog_update()
 		else
 			if tile_facing() >= 112 and tile_facing() <= 117 and dialog_state==2 then
 				state=8
-			elseif tile_facing() ==147 and dialog_state == 2 then
+			elseif tile_facing() ==147 and dialog_state == 3 then
 				state=9
 			end
 			dialog_state=0
@@ -1503,6 +1503,7 @@ function player_facing()
 	end
 end
 
+--found from this cart higininufo--
 function large_print(t,x,y,c)
 local f,a=0
   if (t==nil) print("")return
