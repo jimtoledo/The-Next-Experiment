@@ -400,7 +400,7 @@ function chem_con_draw()
 	pal(15,15)
 	rect(9,12*(chem_selector)-3,21,12*(chem_selector)+10,10)
 	print("⬅️:reset",9,84,7)
-	print("🅾️:quit",9,96,7)
+	print("z:quit",9,96,7)
 end
 
 function chem_order_draw()
