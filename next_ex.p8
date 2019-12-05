@@ -502,37 +502,38 @@ function lock_draw()
 end
 
 function lock_con()
-	if btnp(2) then
-		pad_sel-=1
-		if pad_sel==0 then
-			pad_sel=3
+	if not lock_top then
+		if btnp(2) then
+			pad_sel-=1
+			if pad_sel==0 then
+				pad_sel=3
+			end
+		elseif btnp(3) then
+			pad_sel+=1
+			if pad_sel==4 then
+				pad_sel=1
+			end
+		elseif btnp(0) then
+			num[pad_sel]-=1
+			if num[pad_sel]==-1 then
+				num[pad_sel]=9
+			end
+		elseif btnp(1) then
+			num[pad_sel]+=1
+			if num[pad_sel]==10  then
+				num[pad_sel]=0
+			end
+		elseif btnp(4) then
+			state=3
 		end
-	elseif btnp(3) then
-		pad_sel+=1
-		if pad_sel==4 then
-			pad_sel=1
-		end
-	elseif btnp(0) then
-		num[pad_sel]-=1
-		if num[pad_sel]==-1 then
-			num[pad_sel]=9
-		end
-	elseif btnp(1) then
-		num[pad_sel]+=1
-		if num[pad_sel]==10  then
-			num[pad_sel]=0
-		end
-	elseif btnp(4) then
-		state=3
 	end
-
 	if lock_solve() and not timer_s then
 		timer_s = true
 		lock_top = true
 		sfx(12)
 		solved_t = time()		
 	elseif lock_solve() and timer_s then		
-		if time()-solved_t>= 2 then
+		if time()-solved_t>= 1.5 then
 			state=3
 			add(collected_pieces,126)
 			
@@ -1198,7 +1199,7 @@ function puzzle_select()
 				end
 			end
 		elseif til==156 then
-			show_dialog({"the chest is\nunlocked","it contained a\ndoor panel","it also has\nother un-interesting items"},52,110)
+			show_dialog({"the chest is\nunlocked","it contained a\ndoor panel","and nothing else\ninteresting"},52,110)
 		elseif til== 134 or til== 150 then
 			if curr_key_item==157 and use_item then
 				show_dialog({"you filled\nthe water jug"},52,110)
