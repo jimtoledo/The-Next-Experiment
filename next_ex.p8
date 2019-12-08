@@ -1149,19 +1149,20 @@ function puzzle_select()
 		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
 		"experiment #438"}, 55, 115)
 		--book puzzle
-	--elseif(til == 29 or til == 30) then
-		--	if(not trap_solved and curr_key_item != -1) then
-		--		use_id()
-			--	show_dialog({"do you want\nto use your item?\nx:yes\tz:no"},52,110)
-		--	elseif not flowers_solved and curr_key_item == 59 and use_item then
-			--	show_dialog({"you placed the\nbook into the","empy slot...","revealing a\nsecret door!"}, 55, 115)
-			--	trap_solved = true
-			--	curr_key_item = -1
-			--	use_item = false
-				--sfx(1)
-			--elseif use_item then
-			--	show_dialog({"this item doesn't\ndo anything."},55,107,7)
-			--end
+	elseif(til == 29 or til == 30 or til == 13 or til == 14) then
+			if(not trap_solved and curr_key_item != -1) then
+				--use_id()
+				show_dialog({"do you want\nto use your item?\nx:yes\tz:no"},52,110)
+				item_prompt()
+			elseif not trap_solved and curr_key_item == 59 and use_item then
+				show_dialog({"you placed the\nbook into the","empy slot...","revealing a\nsecret door!"}, 55, 115)
+				trap_solved = true
+				curr_key_item = -1
+		 	use_item = false
+				sfx(1)
+			elseif use_item then
+			 show_dialog({"this item doesn't\ndo anything."},55,107,7)
+			end
 		elseif(stan == 45 or stand == 46) then
 			if(not trap_solved and curr_key_item == -1) then
 				use_id()
