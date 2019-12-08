@@ -211,7 +211,7 @@ function mainroom_init()
 flowers_solved = false
 flower_draw = true
 flower_spr = 38
-trap_solved = false
+trap_solved = true
 dilay=20
 end
 
@@ -232,16 +232,16 @@ function main_room_draw()
 	spr(57, 104, 4)
 	spr(58, 112, 4)
 	spr(41, 20, 6)
-	if(trap_solved) then
-		spr(33,64-((#mainroom[1]/2)*8)+flr(8*(8-1)),flr(8*(13-1)))
-		spr(34,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(13-1)))
-		spr(49,64-((#mainroom[1]/2)*8)+flr(8*(8-1)),flr(8*(14-1)))
-		spr(50,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(14-1)))
-	elseif(not trap_solved) then
+	if trap_solved then
+		mainroom[13][8] = 33
+		mainroom[13][9] = 34
+		mainroom[14][8] = 49
+		mainroom[14][9] = 50
+	elseif not trap_solved then
 		spr(59, 1, 100)
-		spr(42,64-((#mainroom[1]/2)*8)+flr(8*(8-1)),flr(8*(14-1)))
-		spr(43,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(14-1)))
-		spr(44,64-((#mainroom[1]/2)*8)+flr(8*(10-1)),flr(8*(14-1)))
+		mainroom[14][8] = 42
+		mainroom[14][9] = 43
+		mainroom[14][10] = 44
 	end
 	pal()
 	palt(0,false)
