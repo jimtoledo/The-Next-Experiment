@@ -228,6 +228,7 @@ function main_room_draw()
 		 pal(5,0)
 		 pal(2,0)
 	 end
+	end
 	 spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
 	 spr(54, 40, 6)
 	 spr(55, 80, 6)
@@ -250,7 +251,6 @@ function main_room_draw()
 	 pal()
 	 palt(0,false)
 	 palt(14,true)
-	end
 end
 
 function flowers_update()
@@ -1154,7 +1154,16 @@ function puzzle_select()
 		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
 		"experiment #438"}, 55, 115)
 		--book puzzle
-	 --elseif(til == 29 or til == 30 or til == 13 or til == 14) then
+	 elseif(til == 29 or til == 30 or til == 13 or til == 14) then
+			if (trap_solved == true) then
+				show_dialog({"the books are\nall in place."}, 55, 115)
+			elseif not trap_solved and curr_key_item == 59 and use_item then
+				trap_solved = true
+				sfx(1)
+				show_dialog({"you placed the\nbook in the empty", "slot...", "revealing a trap\ndoor!"}, 55, 115)
+				curr_key_item = -1
+				use_item = false
+			end
 
 		end
 
