@@ -211,41 +211,46 @@ function mainroom_init()
 flowers_solved = false
 flower_draw = true
 flower_spr = 38
-trap_solved = true
+trap_solved = false
+book_taken = false
 dilay=20
 end
 
 function main_room_draw()
 	cls(0)
 	draw_room(mainroom)
-	if not lights then
-		for i=2,15 do
-			pal(i,1)
-		end
-		pal(1,0)
-		pal(5,0)
-		pal(2,0)
+	if not book_taken then
+	 if not lights then
+		 for i=2,15 do
+			 pal(i,1)
+		 end
+		 pal(1,0)
+		 pal(5,0)
+		 pal(2,0)
+	 end
+	 spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
+	 spr(54, 40, 6)
+	 spr(55, 80, 6)
+	 spr(57, 104, 4)
+	 spr(58, 112, 4)
+	 spr(41, 20, 6)
+	 if trap_solved then
+	 	mainroom[13][8] = 33
+		 mainroom[13][9] = 34
+		 mainroom[14][8] = 49
+	 	mainroom[14][9] = 50
+	 elseif not trap_solved then
+		 if not book_taken then
+		 spr(59, 1, 100)
+	  end
+	 	mainroom[14][8] = 42
+		 mainroom[14][9] = 43
+		 mainroom[14][10] = 44
+	 end
+	 pal()
+	 palt(0,false)
+	 palt(14,true)
 	end
-	spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
-	spr(54, 40, 6)
-	spr(55, 80, 6)
-	spr(57, 104, 4)
-	spr(58, 112, 4)
-	spr(41, 20, 6)
-	if trap_solved then
-		mainroom[13][8] = 33
-		mainroom[13][9] = 34
-		mainroom[14][8] = 49
-		mainroom[14][9] = 50
-	elseif not trap_solved then
-		spr(59, 1, 100)
-		mainroom[14][8] = 42
-		mainroom[14][9] = 43
-		mainroom[14][10] = 44
-	end
-	pal()
-	palt(0,false)
-	palt(14,true)
 end
 
 function flowers_update()
@@ -1116,7 +1121,7 @@ function door_check()
 end
 
 function puzzle_select()
-		local til = tile_facing()
+	local til = tile_facing()
 	local stan = tile_standing()
 	if state == 1 then
 		if (til >= 6 and til <= 8) or (til >= 22 and til <= 24) then
@@ -1149,29 +1154,10 @@ function puzzle_select()
 		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
 		"experiment #438"}, 55, 115)
 		--book puzzle
-	elseif(til == 29 or til == 30 or til == 13 or til == 14) then
-			if(not trap_solved and curr_key_item != -1) then
-				--use_id()
-				show_dialog({"do you want\nto use your item?\nx:yes\tz:no"},52,110)
-				item_prompt()
-			elseif not trap_solved and curr_key_item == 59 and use_item then
-				show_dialog({"you placed the\nbook into the","empy slot...","revealing a\nsecret door!"}, 55, 115)
-				trap_solved = true
-				curr_key_item = -1
-		 	use_item = false
-				sfx(1)
-			elseif use_item then
-			 show_dialog({"this item doesn't\ndo anything."},55,107,7)
-			end
-		elseif(stan == 45 or stand == 46) then
-			if(not trap_solved and curr_key_item == -1) then
-				use_id()
-				curr_key_item = 59
-				show_dialog({"you picked up\nthe old book."},55,107)
-			elseif(trap_solved) then
-				show_dialog({"there's nothing\nelse to see", "here."}, 55, 107)
-			end
+	 --elseif(til == 29 or til == 30 or til == 13 or til == 14) then
+
 		end
+
 	elseif state == 2 then
 		if til >= 112 and til <= 117 then
 			if not chem_puzzle_intro then
@@ -1290,12 +1276,21 @@ end
 function add_inventory()
 	if state == 3 and (tile_facing()==143 or tile_facing()==145) and not jug_taken then
 		if curr_key_item~=-1 then
-			show_dialog({"my hands are too\nfull to carry this\n"},55,110)
+			show_dialog({"your hands are\nfull already."},55,110)
 		else
 			show_dialog({"you received\nempty jug."},55,110)
 			curr_key_item=157
 			jug_taken=true
 		end
+	elseif state == 1 and (tile_standing() == 45 or tile_standing() == 46) and not book_taken then
+			if curr_key_item~=-1 then
+				show_dialog({"your hands are\nfull already."}, 55, 110)
+			else
+				--show_dialog({"it's a desk.","on it lays a worn\nbook,","a dry quill,", "and an ink well."}, 55, 110)
+				show_dialog({"you picked up\nthe old book."},55,115)
+				curr_key_item = 59
+				book_taken = true
+			end
 	elseif state == 4  then
 
 		if explo and not j and (tile_facing() == 222 or tile_facing() == 223)  then
