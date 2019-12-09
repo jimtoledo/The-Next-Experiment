@@ -37,7 +37,7 @@ function _init()
 
 	controls = false
 
-	lights = true
+	lights = false
 
 
 	fail = false
@@ -275,7 +275,7 @@ function trap_door_update()
 					end
 				end
 			end
-			
+
 			mainroom[14][8] = 49
 			mainroom[14][9] = 50
 			mainroom[13][8] = 42
@@ -291,13 +291,13 @@ function trap_door_update()
 					end
 				end
 			end
-			
-			
+
+
 			mainroom[13][8] = 33
 			mainroom[13][9] = 34
 			mainroom[12][8] = 42
 			mainroom[12][9] = 44
-			stairs_shown = true 
+			stairs_shown = true
 		end
 	end
 end
@@ -1524,14 +1524,14 @@ function drop_item()
 			 room= mechroom
 				add(item,4)
 			end
-			
+
 			add(item,playerx)
 			add(item,playery)
 			add(item,curr_key_item)
 
 			room[playery][playerx] =254
 			curr_key_item =-1
-			
+
 			add(dropped_items,item)
 		end
 	end
@@ -1959,4 +1959,3 @@ __music__
 01 02030405
 00 02030607
 02 02030809
-
