@@ -1154,7 +1154,7 @@ function puzzle_select()
 		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
 		"experiment #438"}, 55, 115)
 		--book puzzle
-	 elseif(til == 29 or til == 30 or til == 13 or til == 14) then
+	elseif(til == 29 or til == 30 or til == 13 or til == 14) then
 			if (trap_solved == true) then
 				show_dialog({"the books are\nall in place."}, 55, 115)
 			elseif not trap_solved and curr_key_item == 59 and use_item then
@@ -1163,6 +1163,9 @@ function puzzle_select()
 				show_dialog({"you placed the\nbook in the empty", "slot...", "revealing a trap\ndoor!"}, 55, 115)
 				curr_key_item = -1
 				use_item = false
+			elseif not trap_solved and curr_key_item != -1 then
+				show_dialog({"do you want\nto use your item?\nx:yes\tz:no"},52,110)
+				item_prompt()
 			end
 
 		end
