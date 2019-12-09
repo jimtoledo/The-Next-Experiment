@@ -1434,7 +1434,7 @@ end
 function dialog_draw()
 	local button=""
 	if dialog_curr_char==#dialog_messages[dialog_state] then
-	 if(dialog_counter>10) button="❎"
+	 if(dialog_counter>10 and (not prompt or dialog_state<#dialog_messages)) button="❎"
 	 if(dialog_counter>20) dialog_counter=0
 	end
 	print(sub(dialog_messages[dialog_state],1,dialog_curr_char)..button,print_x,print_y,7)
