@@ -145,6 +145,7 @@ function _update()
 
 	exp_update()
 	flowers_update()
+	trap_door_update()
 end
 
 function _draw()
@@ -206,12 +207,13 @@ function mainroom_init()
 		{35,19,19,19,19,19,19,19,19,19,19,19,13,14,9,10},
 		{51,19,19,19,19,19,19,19,19,19,19,19,29,30,25,26},
 		{45,46,19,19,19,19,19,19,19,19,19,19,19,19,19,19},
-		{61,62,56,19,19,19,19,19,19,19,19,19,19,19,19,19},
+		{61,62,56,19,19,19,19,42,44,19,19,19,19,19,19,19},
 	}
 flowers_solved = false
 flower_draw = true
 flower_spr = 38
 trap_solved = false
+stairs_shown = false
 book_taken = false
 dilay=20
 end
@@ -235,19 +237,9 @@ function main_room_draw()
 	 spr(57, 104, 4)
 	 spr(58, 112, 4)
 	 spr(41, 20, 6)
-	 if trap_solved then
-	 	mainroom[13][8] = 33
-		 mainroom[13][9] = 34
-		 mainroom[14][8] = 49
-	 	mainroom[14][9] = 50
-	 elseif not trap_solved then
-		 if not book_taken then
-		 spr(59, 1, 100)
-	  end
-	 	mainroom[14][8] = 42
-		 mainroom[14][9] = 43
-		 mainroom[14][10] = 44
-	 end
+	 if not book_taken then
+	 spr(59, 1, 100)
+  end
 	 pal()
 	 palt(0,false)
 	 palt(14,true)
@@ -269,6 +261,48 @@ function draw_flowers()
 		spr(flower_spr,64-((#mainroom[1]/2)*8)+flr(8*(9-1)),flr(8*(7-1)))
 	end
 end
+
+function trap_door_update()
+	if trap_solved and not stairs_shown then
+		if time()-trap_timer >= 3 and time()-trap_timer <3.5 then
+			for i=1,#dropped_items do
+				if dropped_items[i][1]== 1 then
+					if dropped_items[i][2]==8 or dropped_items[i][2]==9 then
+						if dropped_items[i][3]== 13 then
+								dropped_items[i][3] = 12
+								mainroom[dropped_items[i][3]][dropped_items[i][2]] =254
+						end
+					end
+				end
+			end
+			
+			mainroom[14][8] = 49
+			mainroom[14][9] = 50
+			mainroom[13][8] = 42
+			mainroom[13][9] = 44
+		elseif time()-trap_timer >= 3.5 and time()-trap_timer <4 then
+			for i=1,#dropped_items do
+				if dropped_items[i][1]== 1 then
+					if dropped_items[i][2]==8 or dropped_items[i][2]==9 then
+						if dropped_items[i][3]== 12 then
+								dropped_items[i][3] = 11
+								mainroom[dropped_items[i][3]][dropped_items[i][2]] =254
+						end
+					end
+				end
+			end
+			
+			
+			mainroom[13][8] = 33
+			mainroom[13][9] = 34
+			mainroom[12][8] = 42
+			mainroom[12][9] = 44
+			stairs_shown = true 
+		end
+	end
+end
+
+
 
 -->8
 --jimbob--
@@ -1154,7 +1188,7 @@ function puzzle_select()
 		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
 		"experiment #438"}, 55, 115)
 		--book puzzle
-	elseif(til == 29 or til == 30 or til == 13 or til == 14) then
+	elseif(til == 9 or til == 10 or til == 25 or til == 26) then
 			if (trap_solved == true) then
 				show_dialog({"the books are\nall in place."}, 55, 115)
 			elseif not trap_solved and curr_key_item == 59 and use_item then
@@ -1163,9 +1197,15 @@ function puzzle_select()
 				show_dialog({"you placed the\nbook in the empty", "slot...", "revealing a trap\ndoor!"}, 55, 115)
 				curr_key_item = -1
 				use_item = false
+				trap_timer = time()
+			elseif use_item then
+				show_dialog({"this item doesn't\ndo anything."},55,107,7)
+				use_item = false
 			elseif not trap_solved and curr_key_item != -1 then
-				show_dialog({"do you want\nto use your item?\nx:yes\tz:no"},52,110)
+				show_dialog({"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing.","do you want\nto use your item?\nx:yes\tz:no"},52,110)
 				item_prompt()
+			elseif not trap_solved and curr_key_item== -1 then
+				show_dialog({"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."},52,110)
 			end
 
 		end
@@ -1484,15 +1524,14 @@ function drop_item()
 			 room= mechroom
 				add(item,4)
 			end
-
-
+			
 			add(item,playerx)
 			add(item,playery)
 			add(item,curr_key_item)
 
 			room[playery][playerx] =254
 			curr_key_item =-1
-
+			
 			add(dropped_items,item)
 		end
 	end
@@ -1609,6 +1648,7 @@ end
 function item_prompt()
 	prompt = true
 end
+
 -->8
 --intro/outtro code--
 function intro_draw()
@@ -1919,3 +1959,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
