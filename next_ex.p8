@@ -37,7 +37,7 @@ function _init()
 
 	controls = false
 
-	lights = true
+	lights = false
 
 
 	fail = false
