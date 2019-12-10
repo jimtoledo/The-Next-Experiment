@@ -37,7 +37,7 @@ function _init()
 
 	controls = false
 
-	lights = false
+	lights = true
 
 
 	fail = false
@@ -54,12 +54,12 @@ function _init()
 --dialog that should display if the player interacts with the sprites listed
 	item_dialogs = {
 		{{3}, {"the wall is adorned\nwith some ominous", "paintings..."}},
-		{{36, 37}, {"it's a massive\nlocked door.", "it looks like there\nare panels missing.", "find them to escape!"}},
+		{{36, 37}, {"it's a massive\nlocked door.", "there appear to be\npanels missing.", "find them to\nescape!"}},
 		{{35, 51}, {"it's an old mirror.", "in your reflection","you see a nametag:","experiment 438\n"}},
-		{{45,46,61,62}, {"it's a desk.","on it lays a worn\nbook,","a dry quill,", "and an ink well."}},
-		{{13,14,29,30}, {"the shelf is full\nof various books on\n", "different kinds of\nsciences...", "you don't see\nanything special."}},
+		{{45,46,61,62}, {"it's a desk.","there's a dry quill\nand an ink well."}},
+		{{13,14,29,30}, {"the shelf is full\nof various books", "on different kinds\nof sciences...", "you don't see\nanything special."}},
 		{{9,10,25,26}, {"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."}},
-		{{56}, {"a simple chair.", "there's not much\nelse to say."}},
+		{{56, 142}, {"a simple chair.", "there's not much\nelse to say."}},
 		{{128}, {"it's a lamp."}},
 		{{129,130,138,139}, {"it's a very plain\nbed.", "there's nothing\nelse to see."}},
 		{{136}, {"it's an old fridge.","there's nothing\ninside."}},
@@ -69,7 +69,8 @@ function _init()
 		{{212}, {"the bucket is filled with old soap water."}},
 		{{196,197}, {"something vile is\ngrowing here.", "you don't want\nto touch it."}},
 		{{222,223}, {"there's a big hole\nin the wall caused", "by the explosion\nyou created."}},
-		{{157}, {"there's an empty\npitcher on the table."}},
+		{{143, 145}, {"an old table.", "there's nothing\non it."}},
+		{{141}, {"there's a side\ntable with a", "lamp on it."}}
 	}
 
 	mech_room_init()
@@ -1172,17 +1173,17 @@ function puzzle_select()
 				use_item = false
 				d = true
 			elseif not flowers_solved and curr_key_item == 212 and use_item then
-				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,110)
+				show_dialog({"the bucket is\nheavy","you spill the soapy\nmop water\neverywhere...\n","except in the vase\n"},52,115)
 				curr_key_item = -1
 				use_item =false
 			elseif use_item then
-				show_dialog({"this item doesn't\ndo anything."},55,107,7)
+				show_dialog({"this item doesn't\ndo anything."},55,115,7)
 				use_item = false
 			elseif not flowers_solved and curr_key_item != -1 then
-				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water.","do you want\nto use your item?\nx:yes\tz:no"},52,110)
+				show_dialog({"there's a vase of\ndried flowers", "on the table.", "they could use\nsome water.","use your item?\nx:yes\tz:no"},52,115)
 				item_prompt()
 			elseif not flowers_solved and curr_key_item == -1 then
-				show_dialog({"there's a vase of\nflowers on the\ntable.", "they look like\nthey could use\nsome water."},52,110)
+				show_dialog({"there's a vase of\ndried flowers", "on the table.", "they could use\nsome water."},52,115)
 			end
 		elseif(stan == 35 or stan == 51) then
 		show_dialog({"it's an old\nmirror.", "on your reflection\n","you see a nametag:\n",
@@ -1199,13 +1200,13 @@ function puzzle_select()
 				use_item = false
 				trap_timer = time()
 			elseif use_item then
-				show_dialog({"this item doesn't\ndo anything."},55,107,7)
+				show_dialog({"this item doesn't\ndo anything."},55,115,7)
 				use_item = false
 			elseif not trap_solved and curr_key_item != -1 then
-				show_dialog({"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing.","do you want\nto use your item?\nx:yes\tz:no"},52,110)
+				show_dialog({"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing.","use your item?\nx:yes\tz:no"},52,115)
 				item_prompt()
 			elseif not trap_solved and curr_key_item== -1 then
-				show_dialog({"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."},52,110)
+				show_dialog({"there are many\ndifferent kinds", "of books on the\nshelf...","there seems to\nbe one missing."},52,115)
 			end
 
 		end
@@ -1216,7 +1217,7 @@ function puzzle_select()
 				show_dialog({"there are some\nchemicals on the\ntable.","there is also\nan empty beaker\nlabeled 'FRIEND'"},52,107)
 				chem_puzzle_intro=true
 			elseif curr_key_item~=-1 then
-				show_dialog({"my hands are too\nfull"},52,110)
+				show_dialog({"your hands are\nfull already."},52,110)
 			elseif explo then
 				show_dialog({"there are no\nempty beakers left"},52,110)
 			else
@@ -1224,12 +1225,13 @@ function puzzle_select()
 			end
 		end
 		if til >= 84 and til <= 86 then
-			show_dialog({"there's something\nwritten on the\nchalkboard",
-			small_font("\"i have crafted an\nexplosive chemical\nlike no other!\""),
-			small_font("\"it explodes when\nexposed to just\na litle heat!\""),
-			small_font("\"it's definitely\nnot dark purple!\"\n"),
-			small_font("\"i've decided to\ncall it 'friend.'\"\n"),
-			small_font("\"i'm the only one\nthat knows how to\nmake friend!\"")},52,107)
+			show_dialog({"there's something\nwritten on the","chalkboard...",
+			small_font("\"i have crafted a\n fun, new\""),
+			small_font("\"mixture like\nno other!\""),
+			small_font("\"it explodes when\nexposed to just\""),
+			small_font("\"a little heat.\""),
+			small_font("\"the mixing order\nmust be exact.\"\n"),
+			small_font("\"i've decided to\ncall it 'friend.'\"\n")},52,115)
 		--chalkboard
 		end
 		if til==64 or til==65 then
@@ -1278,10 +1280,10 @@ function puzzle_select()
 				curr_key_item=149
 				use_item =false
 			elseif curr_key_item!=157 and use_item then
-				show_dialog({"this item doesn't\ndo anything."},52,107,7)
+				show_dialog({"this item doesn't\ndo anything."},52,115,7)
 				use_item = false
 			elseif curr_key_item != -1 then
-				show_dialog({"it appears that\nthe sink works","do you want\nto use your item?\nx:yes\tz:no"},52,110)
+				show_dialog({"although it\nis quite rusty,","it appears that\nthe sink works.","use your item?\nx:yes\tz:no"},52,110)
 				item_prompt()
 			else
 				show_dialog({"although it\nis quite rusty,","it appears that\nthe sink works."},52,110)
@@ -1316,7 +1318,7 @@ function puzzle_select()
 				show_dialog({"this item doesn't\ndo anything."},55,107,7)
 				use_item = false
 			elseif curr_key_item != -1 then
-				show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle.","do you want\nto use your item?\nx:yes\tz:no"},55,110)
+				show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle.","use your item?\nx:yes\tz:no"},55,110)
 				item_prompt()
 			else
 				show_dialog({"the stove has\na strong fire","it must be used to\nwarm the castle."},55,110)
@@ -1695,7 +1697,7 @@ function win_draw()
 	 	rect(0,0,22,8,0)
 			print(runtime,2,2,7)
 		else
-			cls(5)
+			cls(0)
 			con_animation()
 			if (time()-set >= 11) music(-1,2000)
 
