@@ -1706,6 +1706,8 @@ function win_draw()
 			print("you have escaped",hcenter("you have escaped"),80,6)
 			print("press ❎ to play again",hcenter("press ❎ to play again"),90,6)
 
+			pal(5,0)
+			pal(0,5)
 			i = 112
 			a = 1
 			x = 0
@@ -1718,6 +1720,8 @@ function win_draw()
 				end
 				a+= 1
 			end
+			pal(5,5)
+			pal(0,0)
 		end
 	else
 		cls(0)
@@ -1961,3 +1965,4 @@ __music__
 01 02030405
 00 02030607
 02 02030809
+
